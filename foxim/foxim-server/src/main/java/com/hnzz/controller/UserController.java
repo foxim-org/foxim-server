@@ -56,6 +56,8 @@ public class UserController  {
     @Resource
     private JWTHelper jwtHelper;
     @Resource
+    private RedisTemplate<String,String> redisTemplate;
+    @Resource
     private ContactsService contactsService;
     @Resource
     private GroupService groupService;
@@ -181,6 +183,44 @@ public class UserController  {
         return ResponseEntity.ok(userDTO);
     }
 
+    @GetMapping("getCode")
+    @ApiOperation("获取验证码")
+    public void getCodeToBase64(HttpServletResponse response, HttpServletRequest request) throws IOException {
+        Object[] objs = VerifyUtil.newBuilder().build().createImage();
+        HttpSession session = request.getSession();
+
+        String id = session.getId();
+        session.setAttribute("SESSION_VERIFY_CODE_" + id, objs[0]);
+
+
+        set(id,(String) objs[0],300L);
+        // 将图片输出给浏览器
+        BufferedImage image = (BufferedImage) objs[1];
+        response.setContentType("image/png");
+        OutputStream os = response.getOutputStream();
+        ImageIO.write(image, "png", os);
+    }
+
+
+    @GetMapping("/checkCode/{code}")
+    @ApiOperation("校验验证码")
+    public ResponseEntity checkCode(HttpServletRequest request,@PathVariable("code")String code){
+        HttpSession session = request.getSession();
+        // 取到sessionid
+        String id = session.getId();
+        if (id!=null){
+            String s = redisTemplate.opsForValue().get(id);
+            if (s!=null){
+                if (redisTemplate.getExpire(id)>0){
+                    if (code.equals(s)){
+                        return ResultUtil.response(HttpStatus.OK,"校验通过");
+                    }
+                }
+            }
+        }
+        return ResultUtil.response(HttpStatus.NOT_FOUND,"验证码输入有误");
+    }
+
 
     /**
      * 加好友后查看资料
@@ -247,6 +287,19 @@ public class UserController  {
     }
 
 
+    /**
+     * 设置验证码缓存及过期时间
+     * @param key
+     * @param value
+     * @param time
+     */
+    private void set(String key, String value, long time) {
+        try {
+            redisTemplate.opsForValue().set(key, value, time, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 首页搜索框查询好友

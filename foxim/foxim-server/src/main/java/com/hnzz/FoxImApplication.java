@@ -13,9 +13,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  **/
 @Slf4j
 @SpringBootApplication(scanBasePackages = "com.hnzz")
-public class ChatApplication {
+public class FoxImApplication {
     public static void main(String[] args) {
-        SpringApplication.run(ChatApplication.class,args);
+        SpringApplication.run(FoxImApplication.class,args);
         log.info("============启动成功==============");
     }
 }

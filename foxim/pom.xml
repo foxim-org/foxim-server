@@ -5,13 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.hnzz</groupId>
-    <artifactId>chat</artifactId>
+    <artifactId>foxim</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>chat-commons</module>
-        <module>chat-ability</module>
-        <module>chat-server</module>
+        <module>foxim-commons</module>
+        <module>foxim-ability</module>
+        <module>foxim-server</module>
     </modules>
 
     <properties>
@@ -22,7 +22,7 @@
         <spring-cloud.version>Hoxton.SR12</spring-cloud.version>
         <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
         <java.version>1.8</java.version>
-        <chat.version>1.0-SNAPSHOT</chat.version>
+        <foxim.version>1.0-SNAPSHOT</foxim.version>
         <cos_api.version>5.6.8</cos_api.version>
     </properties>
     <!--  公共依赖-->
@@ -63,20 +63,14 @@
             <!-- 自定义的模块的版本管理 -->
             <dependency>
                 <groupId>com.hnzz</groupId>
-                <artifactId>chat-commons-base</artifactId>
-                <version>${chat.version}</version>
+                <artifactId>foxim-commons-base</artifactId>
+                <version>${foxim.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.hnzz</groupId>
-                <artifactId>chat-config</artifactId>
-                <version>${chat.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.hnzz</groupId>
-                <artifactId>chat-commons-data</artifactId>
-                <version>${chat.version}</version>
+                <artifactId>foxim-commons-data</artifactId>
+                <version>${foxim.version}</version>
             </dependency>
 
             <dependency>
