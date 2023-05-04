@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: chat-server
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      server-addr: 120.77.43.64:8848
+      config:
+        file-extension: yaml
+        extension-configs:
+          - data-id: common.yaml
+            group: DEFAULT_GROUP
+            refresh: true
+---
+#开发环境
+spring:
+  profiles: dev
+  cloud:
+    nacos:
+      discovery:
+        group: DEV-GROUP
+---
+#正式环境
+spring:
+  profiles: prod
+  cloud:
+    nacos:
+      discovery:
+        group: PROD-GROUP
+---
+#测试环境
+spring:
+  profiles: test
+  cloud:
+    nacos:
+      discovery:
+        group: TEST-GROUP
