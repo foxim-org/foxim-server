@@ -245,6 +245,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Object deleteUser(String id) {
+        return template.findAndRemove(Query.query(Criteria.where("_id").is(id)),User.class);
+    }
+
+    @Override
     @Log("修改用户状态业务层")
     public void setUserStatus(String userId, UserStatusText status) {
         User user = template.findById(userId,User.class);
