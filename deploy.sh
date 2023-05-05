@@ -6,7 +6,11 @@ mvn clean install -DskipTests
 cp foxim-ability/foxim-ability-gateway/target/foxim-ability-gateway-1.0-SNAPSHOT.jar ../.
 cp foxim-server/target/foxim-server-1.0-SNAPSHOT.jar ../.
 cd ..
-scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa foxim-ability-gateway-1.0-SNAPSHOT.jar foxim-server-1.0-SNAPSHOT.jar ${SSH_USERNAME}@${SSH_IP}:~/server/foxim-server/.
+
+scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa \
+foxim-ability-gateway-1.0-SNAPSHOT.jar \
+foxim-server-1.0-SNAPSHOT.jar \
+${SSH_USERNAME}@${SSH_IP}:~/server/foxim-server/.
 
 ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${SSH_USERNAME}@${SSH_IP} <<"ENDSSH"
 export NVM_DIR="$HOME/.nvm"
