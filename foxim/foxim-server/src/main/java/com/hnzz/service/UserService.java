@@ -27,7 +27,7 @@ public interface UserService {
      * 注册
      * @param form 注册表单对象
      */
-    UserDTO register(RegisterForm form);
+    UserDTO register(RegisterValidForm form);
     /**
      * 登录
      *
@@ -110,7 +110,7 @@ public interface UserService {
 
     Page<User> userAll(Integer pageNum, Integer pageSize);
 
-    Boolean formUserById(String mobile);
+    Boolean formUserByMobile(String mobile);
 
     String loginMobile(String mobile, String code ,String ipAddress);
 

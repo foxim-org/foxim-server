@@ -4,7 +4,7 @@ import cn.hutool.json.JSONUtil;
 import com.github.javafaker.Faker;
 import com.hnzz.entity.User;
 import com.hnzz.form.userform.LoginForm;
-import com.hnzz.form.userform.RegisterForm;
+import com.hnzz.form.userform.RegisterValidForm;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,12 +50,12 @@ public class UserControllerTest {
     @Test
     public void testUserRegister() throws Exception {
         // 生成注册的随机数据
-        RegisterForm registerForm = new RegisterForm();
-        registerForm.setMobile(faker.regexify("[1][3456789][0-9]{9}"));
-        registerForm.setUsername(faker.name().name());
-        registerForm.setPassword("12345678");
+        RegisterValidForm registerValidForm = new RegisterValidForm();
+        registerValidForm.setMobile(faker.regexify("[1][3456789][0-9]{9}"));
+        registerValidForm.setUsername(faker.name().name());
+        registerValidForm.setPassword("12345678");
         // 将随机数据转换为json格式
-        String s = JSONUtil.parse(registerForm).toString();
+        String s = JSONUtil.parse(registerValidForm).toString();
         log.info("生成随机数据为: {}",s);
         // 调用接口进行测试
         mockMvc.perform(post(URL_PREFIX + "register",2)

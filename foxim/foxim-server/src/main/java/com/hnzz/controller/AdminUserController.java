@@ -3,6 +3,7 @@ package com.hnzz.controller;
 import cn.hutool.core.bean.BeanUtil;
 import com.hnzz.common.ResultUtil;
 import com.hnzz.commons.base.enums.AdminRoleEnum;
+import com.hnzz.commons.base.enums.system.SettingEnum;
 import com.hnzz.commons.base.exception.AppException;
 import com.hnzz.dto.ContactsPage;
 import com.hnzz.dto.GroupUserAdmin;
@@ -19,6 +20,7 @@ import com.hnzz.form.userform.LoginForm;
 import com.hnzz.form.userform.RegisterForm;
 import com.hnzz.service.*;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.data.domain.Page;
@@ -51,6 +53,23 @@ public class  AdminUserController {
     private GroupUserService groupUserService;
     @Resource
     private ContactsService contactsService;
+    @Resource
+    private SettingService settingService;
+
+    @PostMapping("/setting/put/{name}")
+    public ResponseEntity putSetting(@PathVariable("name")String name, @RequestBody String value){
+
+        return ResponseEntity.ok(
+                settingService.saveSetting(name,value)
+        );
+    }
+
+    @GetMapping("/setting/get/{name}")
+    @ApiImplicitParam(name = "key", value = "配置key", paramType = "path" , allowableValues = "REGISTER_SETTING , LOGIN_SETTING , WITH_USER_SETTING")
+    public ResponseEntity getSetting(@PathVariable("name") String name){
+        return settingService.getSetting(name);
+    }
+
 
     @PostMapping("/kickOutGroup")
     @ApiOperation("管理员踢出群成员")
