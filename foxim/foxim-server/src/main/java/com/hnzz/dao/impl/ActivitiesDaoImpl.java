@@ -30,7 +30,7 @@ public class ActivitiesDaoImpl implements ActivitiesDao {
     @Override
     public Activities setActivitiesStatus(Activities activities){
         Update update = new Update();
-        update.set("activities",activities.getStatus());
+        update.set("status",activities.getStatus());
         Query query = new Query(Criteria.where("_id").is(activities.getId()));
         FindAndModifyOptions options = new FindAndModifyOptions().returnNew(true);
         return mongoTemplate.findAndModify(query, update,options, Activities.class);
