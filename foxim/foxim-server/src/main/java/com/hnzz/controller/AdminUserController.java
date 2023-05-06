@@ -17,6 +17,7 @@ import com.hnzz.form.UserAbleForm;
 import com.hnzz.form.groupform.GroupId;
 import com.hnzz.form.groupform.QuitGroup;
 import com.hnzz.form.userform.LoginForm;
+import com.hnzz.form.userform.RegisterForm;
 import com.hnzz.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -341,4 +342,26 @@ public class  AdminUserController {
         ContactsPage contactsPage = contactsService.addressList(pageNum-1, pageSize, search);
         return ResponseEntity.ok(contactsPage);
     }
+
+    @PostMapping("addNewUsers")
+    @ApiOperation("新增用户")
+    public ResponseEntity addNewUsers(@RequestHeader("adminId") String adminId, @RequestBody RegisterForm form) {
+        return ResponseEntity.ok(userService.register(form));
+    }
+    @PostMapping("deleteUsers")
+    @ApiOperation("删除用户")
+    public ResponseEntity deleteUsers(@RequestHeader("adminId") String adminId, @RequestParam String userId) {
+        UserDTO userById = userService.findUserById(userId);
+        if (userById==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("该用户不存在");
+        }
+        return ResponseEntity.ok(userService.deleteUser(userById.getId()));
+    }
+
+    @PostMapping("updateUsers")
+    @ApiOperation("修改用户")
+    public ResponseEntity updateUsers(@RequestHeader("adminId") String adminId, @RequestBody User user) {
+        return ResponseEntity.ok(userService.setUserInfo(user));
+    }
+
 }
