@@ -117,4 +117,6 @@ public interface UserService {
     UserDTO registerMobile(RegisterMobile form , String ipAddress);
 
     void setUserMobilePwd(String userId, String password);
+
+    Object deleteUser(String id);
 }

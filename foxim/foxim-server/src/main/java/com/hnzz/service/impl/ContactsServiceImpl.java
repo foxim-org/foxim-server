@@ -108,11 +108,28 @@ public class ContactsServiceImpl implements ContactsService {
                 }
             }
         }
-        // 排序
+        ArrayList<ContactSort> allContactSorts = new ArrayList<>();
+        ArrayList<ContactSort> isSticky = new ArrayList<>();
+        ArrayList<ContactSort> puTong = new ArrayList<>();
+
         if (!contactSorts.isEmpty()) {
-            Collections.sort(contactSorts);
+            for (ContactSort c : contactSorts) {
+                if (c.getIsSticky()!=null&&c.getIsSticky()==true){
+                    isSticky.add(c);
+                }else {
+                    puTong.add(c);
+                }
+            }
         }
-        return contactSorts;
+        Collections.sort(isSticky);
+        Collections.sort(puTong);
+
+        allContactSorts.addAll(isSticky);
+        allContactSorts.addAll(puTong);
+
+
+        return allContactSorts;
+
     }
 
 
