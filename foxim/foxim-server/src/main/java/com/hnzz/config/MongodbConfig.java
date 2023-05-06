@@ -4,6 +4,7 @@ package com.hnzz.config;
 import com.hnzz.entity.bot.Bots;
 import com.hnzz.entity.PrivateMessage;
 import com.hnzz.entity.User;
+import com.hnzz.entity.system.Setting;
 import com.mongodb.client.*;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +30,8 @@ public class MongodbConfig {
     public void initIndicesAfterStartup() {
         // User是实体类，给User集合中的username和mobile字段加索引，并且是唯一索引
         mongoTemplate.indexOps(User.class).ensureIndex(new Index().on("username", Sort.Direction.ASC).unique());
+
+        mongoTemplate.indexOps(Setting.class).ensureIndex(new Index().on("name", Sort.Direction.ASC).unique());
 
         /*mongoTemplate.indexOps(User.class).ensureIndex(new Index().on("mobile", Sort.Direction.ASC).unique());*/
 

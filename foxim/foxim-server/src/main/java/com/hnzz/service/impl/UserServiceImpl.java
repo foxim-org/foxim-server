@@ -21,7 +21,6 @@ import com.hnzz.service.IdsService;
 import com.hnzz.service.PrivateMessageService;
 import com.hnzz.service.SmsService;
 import com.hnzz.service.UserService;
-import com.mongodb.client.result.UpdateResult;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,7 +74,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Log("用户注册业务层")
-    public UserDTO register(RegisterForm form) {
+    public UserDTO register(RegisterValidForm form) {
 
         IdsPattern idsPattern = new IdsPattern();
         Integer idWithRandom = idsService.getIdWithRandom(idsPattern);
@@ -509,7 +508,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean formUserById(String mobile) {
+    public Boolean formUserByMobile(String mobile) {
         return userDao.formUserByMobile(mobile);
     }
 

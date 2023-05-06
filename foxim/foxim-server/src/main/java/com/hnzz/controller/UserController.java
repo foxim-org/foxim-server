@@ -3,41 +3,34 @@ package com.hnzz.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.hnzz.common.ResultUtil;
+import com.hnzz.commons.base.enums.system.SettingEnum;
+import com.hnzz.commons.base.enums.system.UserValidTypeEnum;
 import com.hnzz.commons.base.enums.userenums.ContactStatus;
 import com.hnzz.commons.base.enums.userenums.UserStatusText;
 import com.hnzz.commons.base.exception.AppException;
 import com.hnzz.commons.base.jwt.JWTHelper;
 import com.hnzz.commons.base.result.Result;
-import com.hnzz.commons.base.util.VerifyUtil;
 import com.hnzz.dto.*;
 import com.hnzz.entity.Contacts;
 import com.hnzz.entity.User;
+import com.hnzz.entity.system.UserRegisterSetting;
 import com.hnzz.form.userform.*;
 import com.hnzz.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author HB and 周俊
@@ -56,35 +49,42 @@ public class UserController  {
     @Resource
     private JWTHelper jwtHelper;
     @Resource
-    private RedisTemplate<String,String> redisTemplate;
-    @Resource
     private ContactsService contactsService;
     @Resource
     private GroupService groupService;
+    @Resource
+    private SettingService settingService;
 
     @PostMapping("register")
     @ApiOperation("用户注册")
-    public ResponseEntity<UserDTO> register(@RequestBody @Valid RegisterForm form){
-        return ResponseEntity.ok(userService.register(form));
+    public ResponseEntity register(@RequestHeader("ipAddr")String ipAddr , @RequestBody @Valid RegisterForm form){
+        UserRegisterSetting userRegisterSetting = (UserRegisterSetting) settingService.getSetting(SettingEnum.REGISTER_SETTING.name()).getBody();
+        if (userRegisterSetting!=null){
+            boolean canRegister = userRegisterSetting.canRegister(form.getRegisterType());
+            if (canRegister){
+                RegisterMobile registerMobile = BeanUtil.copyProperties(form, RegisterMobile.class);
+                if (form.getRegisterType().equals(UserValidTypeEnum.USERNAME_PASSWORD.name())){
+                    return ResponseEntity.ok(userService.registerMobile(registerMobile , ipAddr));
+                }else if(form.getRegisterType().equals(UserValidTypeEnum.MOBILE_PASSWORD.name())){
+                    Boolean exits = userService.formUserByMobile(form.getMobile());
+                    if (exits){
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("该手机号已被被注册,请重新输入手机号注册!");
+                    }
+                    return ResponseEntity.ok(userService.registerMobile(registerMobile , ipAddr));
+                }
+            }
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("暂时无法通过"+form.getRegisterType()+"方法注册");
     }
 
     @PostMapping("registerMobile")
     @ApiOperation("用户手机号验证码注册接口")
     public ResponseEntity registerMobile(@RequestHeader("ipAddr")String ipAddr , @RequestBody @Valid RegisterMobile form){
-        Boolean exits = userService.formUserById(form.getMobile());
+        Boolean exits = userService.formUserByMobile(form.getMobile());
         if (exits){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("该手机号已被被注册,请重新输入手机号注册!");
         }
         return ResponseEntity.ok(userService.registerMobile(form , ipAddr));
-    }
-
-    @PostMapping("registerByUsername")
-    @ApiOperation("用户名密码注册接口")
-    public ResponseEntity<UserDTO> registerByUsername(@RequestHeader("ipAddr")String ipAddr, @RequestBody @Valid RegisterByUsernameForm form){
-        RegisterMobile registerMobile = new RegisterMobile();
-        registerMobile.setUsername(form.getUsername());
-        registerMobile.setPassword(form.getPassword());
-        return ResponseEntity.ok(userService.registerMobile(registerMobile , ipAddr));
     }
 
     @PostMapping("login")
@@ -183,44 +183,6 @@ public class UserController  {
         return ResponseEntity.ok(userDTO);
     }
 
-    @GetMapping("getCode")
-    @ApiOperation("获取验证码")
-    public void getCodeToBase64(HttpServletResponse response, HttpServletRequest request) throws IOException {
-        Object[] objs = VerifyUtil.newBuilder().build().createImage();
-        HttpSession session = request.getSession();
-
-        String id = session.getId();
-        session.setAttribute("SESSION_VERIFY_CODE_" + id, objs[0]);
-
-
-        set(id,(String) objs[0],300L);
-        // 将图片输出给浏览器
-        BufferedImage image = (BufferedImage) objs[1];
-        response.setContentType("image/png");
-        OutputStream os = response.getOutputStream();
-        ImageIO.write(image, "png", os);
-    }
-
-
-    @GetMapping("/checkCode/{code}")
-    @ApiOperation("校验验证码")
-    public ResponseEntity checkCode(HttpServletRequest request,@PathVariable("code")String code){
-        HttpSession session = request.getSession();
-        // 取到sessionid
-        String id = session.getId();
-        if (id!=null){
-            String s = redisTemplate.opsForValue().get(id);
-            if (s!=null){
-                if (redisTemplate.getExpire(id)>0){
-                    if (code.equals(s)){
-                        return ResultUtil.response(HttpStatus.OK,"校验通过");
-                    }
-                }
-            }
-        }
-        return ResultUtil.response(HttpStatus.NOT_FOUND,"验证码输入有误");
-    }
-
 
     /**
      * 加好友后查看资料
@@ -286,20 +248,6 @@ public class UserController  {
         return ResultUtil.resultToResponse(Result.success(userSimpleDTO));
     }
 
-
-    /**
-     * 设置验证码缓存及过期时间
-     * @param key
-     * @param value
-     * @param time
-     */
-    private void set(String key, String value, long time) {
-        try {
-            redisTemplate.opsForValue().set(key, value, time, TimeUnit.SECONDS);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     /**
      * 首页搜索框查询好友
