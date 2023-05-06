@@ -34,17 +34,17 @@ import java.util.Optional;
 @RequestMapping("api/v1/file")
 public class FileController {
 
-    @Value("${app.uploadUrl}")
-    private String uploadUrl;
 
     @Resource
     private FileInfoService fileInfoService;
 
+    @Resource
+    private SeaweedFSUtil seaweedFSUtil;
+
     @GetMapping("down")
     @ApiOperation("文件下载")
     public ResponseEntity<byte[]> get(@RequestParam("url") String url ) throws IOException {
-        System.out.println("===========开始执行=============");
-        return SeaweedFSUtil.downloadFile(url);
+        return seaweedFSUtil.downloadFile(url);
     }
 
     @PostMapping("upload")
@@ -61,7 +61,7 @@ public class FileController {
         /*if (file.getSize()>10*1024*1024){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("文件大小不能超过10MB!");
         }*/
-        ResponseEntity<FileInfo> response = SeaweedFSUtil.uploadFile(uploadUrl, file);
+        ResponseEntity<FileInfo> response = seaweedFSUtil.uploadFile(file);
         FileInfo fileInfo = response.getBody();
         if (fileInfo==null){
             throw new AppException("上传失败");
@@ -88,7 +88,7 @@ public class FileController {
             if (file.getSize()>5*1024*1024){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("文件大小不能超过5MB!");
             }*/
-            ResponseEntity<FileInfo> response = SeaweedFSUtil.uploadFile(uploadUrl, file);
+            ResponseEntity<FileInfo> response = seaweedFSUtil.uploadFile(file);
             FileInfo fileInfo = response.getBody();
             if (fileInfo == null) {
                 throw new AppException("上传失败");

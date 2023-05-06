@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.hnzz.common.ExpLevel;
 import com.hnzz.common.SeaweedFSUtil;
+import com.hnzz.commons.base.enums.activity.ActivitiesField;
 import com.hnzz.commons.base.enums.userenums.ContactStatus;
 import com.hnzz.commons.base.enums.userenums.UserStatusText;
 import com.hnzz.commons.base.exception.AppException;
@@ -17,8 +18,8 @@ import com.hnzz.entity.*;
 import com.hnzz.form.IdsPattern;
 import com.hnzz.form.Timelinefrom.ReplyFrom;
 import com.hnzz.form.userform.*;
+import com.hnzz.service.ActivitiesService;
 import com.hnzz.service.IdsService;
-import com.hnzz.service.PrivateMessageService;
 import com.hnzz.service.SmsService;
 import com.hnzz.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -57,10 +59,8 @@ public class UserServiceImpl implements UserService {
     private MongoTemplate template;
     @Value("${user.exp}")
     private Integer exp;
-    @Value("${user.tokenExpiry}")
-    private Long tokenExpiry;
-    @Value("${app.uploadUrl}")
-    private String uploadUrl;
+    @Resource
+    private ActivitiesService activitiesService;
     @Resource
     private UserDao userDao;
     @Resource
@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
     @Resource
     private JWTHelper jwtHelper;
     @Resource
-    private PrivateMessageService privateMessageService;
+    private SeaweedFSUtil seaweedFSUtil;
 
     @Override
     @Log("用户注册业务层")
@@ -105,7 +105,7 @@ public class UserServiceImpl implements UserService {
             throw new AppException("用户注册失败");
         }
         Map<String, Object> map = BeanUtil.beanToMap(user, new HashMap<>(), false, true);
-        String jwt = jwtHelper.createJWT(new Date(System.currentTimeMillis() + tokenExpiry), map);
+        String jwt = jwtHelper.createJWT(map);
         UserDTO userDTO = BeanUtil.copyProperties(user, UserDTO.class);
         userDTO.setToken(jwt);
         return userDTO;
@@ -126,7 +126,9 @@ public class UserServiceImpl implements UserService {
                 .setPassword(DigestUtil.sha256Hex(user.getPassword()));
         // 尝试注册
         try {
+            // 用户注册
             user = template.insert(user);
+            // 修改狐狸号为使用状态
             idsService.setIdsUsed(idWithRandom);
             // 查找自动注册的好友
             List<User> autoAddFriend = getAutoAddFriend();
@@ -135,25 +137,30 @@ public class UserServiceImpl implements UserService {
                 Date date = new Date();
                 for (User friend : autoAddFriend) {
                     // 生成 好友和我的关系
-                    Contacts withMe = new Contacts();
-                    withMe.setUserId(user.getId());
-                    withMe.setContactId(friend.getId());
-                    withMe.setRemark(friend.getUsername());
-                    withMe.setFriendName(friend.getUsername());
-                    withMe.setCreatedAt(date);
-                    withMe.setHead(friend.getAvatarUrl());
-                    withMe.setStatus(ContactStatus.ACCEPTED.getCode());
+                    Contacts withMe = new Contacts(user.getId(),friend,ContactStatus.ACCEPTED);
                     contacts.add(withMe);
                     // 生成 我与好友的关系
-                    Contacts withFriend = new Contacts();
-                    withFriend.setUserId(friend.getId());
-                    withFriend.setContactId(user.getId());
-                    withFriend.setRemark(user.getUsername());
-                    withFriend.setFriendName(user.getUsername());
-                    withFriend.setCreatedAt(date);
-                    withFriend.setHead(user.getAvatarUrl());
-                    withFriend.setStatus(ContactStatus.ACCEPTED.getCode());
+                    Contacts withFriend = new Contacts(friend.getId(),user,ContactStatus.ACCEPTED);
                     contacts.add(withFriend);
+                }
+                for(Contacts contact : contacts){
+                    if (Objects.equals(contact.getUserId(),user.getId())){
+                        String s = contact.getFriendName() + "和您已经是好友啦 , 快开始聊天吧! ";
+                        HashMap<String, String> payload = new HashMap<>(8);
+                        payload.put(ActivitiesField.CONTACT_ID,user.getId());
+                        payload.put(ActivitiesField.USER_ID,contact.getContactId());
+                        payload.put(ActivitiesField.TEXT,s);
+                        payload.put(ActivitiesField.ACTIVITY_CREATEDAT,new Date ().toString());
+                        payload.put(ActivitiesField.TYPE,"agree");
+                        String topic = Activities.topic("private", user.getId(), "agree");
+                        Activities activities = new Activities(topic,payload);
+                        try {
+                            activities = activitiesService.saveActivities(activities);
+                        } catch (IOException e) {
+                            log.warn("编号为{}的消息发送失败",activities.getId());
+                            throw new AppException("添加好友消息发送失败!");
+                        }
+                    }
                 }
                 template.insert(contacts,Contacts.class);
             }
@@ -164,7 +171,7 @@ public class UserServiceImpl implements UserService {
             throw new AppException("用户注册失败");
         }
         Map<String, Object> map = BeanUtil.beanToMap(user, new HashMap<>(), false, true);
-        String jwt = jwtHelper.createJWT(new Date(System.currentTimeMillis() + tokenExpiry), map);
+        String jwt = jwtHelper.createJWT(map);
         UserDTO userDTO = BeanUtil.copyProperties(user, UserDTO.class);
         userDTO.setToken(jwt);
         return userDTO;
@@ -191,7 +198,7 @@ public class UserServiceImpl implements UserService {
         }
         UserDTO userDTO = setUserInfo(new User().setId(user.getId()).setLoginIp(ipAddress).setLastLoginAt(new Date()).setStatusText(UserStatusText.LINE_ON.getCode()));
         Map<String, Object> map = BeanUtil.beanToMap(userDTO, new HashMap<>(), false, true);
-        return jwtHelper.createJWT(new Date(System.currentTimeMillis() + tokenExpiry), map);
+        return jwtHelper.createJWT(map);
     }
 
     @Override
@@ -204,7 +211,7 @@ public class UserServiceImpl implements UserService {
         }
         UserDTO userDTO = setUserInfo(new User().setId(user.getId()).setLoginIp(ipAddress).setLastLoginAt(new Date()).setStatusText(UserStatusText.LINE_ON.getCode()));
         Map<String, Object> map = BeanUtil.beanToMap(userDTO, new HashMap<>(), false, true);
-        return jwtHelper.createJWT(new Date(System.currentTimeMillis() + tokenExpiry), map);
+        return jwtHelper.createJWT(map);
     }
 
     @Override
@@ -492,7 +499,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO setUserAvatarUrl(String userId, MultipartFile file) {
-        ResponseEntity<FileInfo> response = SeaweedFSUtil.uploadFile(uploadUrl, file);
+        ResponseEntity<FileInfo> response = seaweedFSUtil.uploadFile(file);
         FileInfo body = response.getBody();
         if (body == null) {
             throw new AppException("头像上传失败");

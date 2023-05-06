@@ -44,9 +44,6 @@ import java.util.stream.Collectors;
 public class GroupServiceImpl implements GroupService {
 
     @Resource
-    private GroupService groupService;
-
-    @Resource
     private GroupDao groupDao;
     @Resource
     private IdsService idsService;
@@ -60,8 +57,8 @@ public class GroupServiceImpl implements GroupService {
     @Resource
     private JWTHelper jwtHelper;
 
-    @Value("${app.uploadUrl}")
-    private String uploadUrl;
+    @Resource
+    private SeaweedFSUtil seaweedFSUtil;
 
     @Override
     @Transactional
@@ -173,7 +170,7 @@ public class GroupServiceImpl implements GroupService {
         map.put("groupId",groupId);
         map.put("inviteId",inviteId);
 
-        return jwtHelper.createJWT(new Date(System.currentTimeMillis()), map);
+        return jwtHelper.createJWT(map);
     }
 
     @Override
@@ -183,7 +180,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public Group setGroupAvatarUrl(String groupId, MultipartFile file) {
-        ResponseEntity<FileInfo> response = SeaweedFSUtil.uploadFile(uploadUrl, file);
+        ResponseEntity<FileInfo> response = seaweedFSUtil.uploadFile(file);
         FileInfo body = response.getBody();
         if (body==null){
             throw new AppException("头像上传失败");
