@@ -3,8 +3,10 @@ package com.hnzz.common;
 import com.hnzz.commons.base.exception.AppException;
 import com.hnzz.entity.FileInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -18,6 +20,7 @@ import java.util.Arrays;
  * TODO seaweedfs文件上传服务
  */
 @Slf4j
+@Component
 public class SeaweedFSUtil {
 
     private static final String SUBMIT = "/submit";
@@ -26,14 +29,15 @@ public class SeaweedFSUtil {
     private static final String TTL = "ttl";
     private static final String LOOKUP = "/lookup";
 
+    @Value("${app.uploadUrl}")
+    private String uploadUrl;
 
     /**
      * 文件上传
-     * @param url
-     * @param file
+     * @param file 文件内容
      * @return ResponseEntity
      */
-    public static ResponseEntity<FileInfo> uploadFile(String url, MultipartFile file){
+    public ResponseEntity<FileInfo> uploadFile(MultipartFile file){
         try {
             byte[] fileBytes = file.getBytes();
             ByteArrayResource resource = new ByteArrayResource(fileBytes) {
@@ -48,14 +52,14 @@ public class SeaweedFSUtil {
             httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
             HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(parts, httpHeaders);
             RestTemplate client = new RestTemplate();
-            return client.postForEntity(url, httpEntity, FileInfo.class);
+            return client.postForEntity(uploadUrl, httpEntity, FileInfo.class);
         } catch (IOException e) {
             log.warn("发生IO处理异常 ",e);
             throw new AppException(e);
         }
     }
 
-    public static ResponseEntity<byte[]> downloadFile(String url){
+    public ResponseEntity<byte[]> downloadFile(String url){
         RestTemplate client = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM));
@@ -64,13 +68,13 @@ public class SeaweedFSUtil {
         return client.exchange(url, HttpMethod.GET, entity, byte[].class);
     }
 
-    public static String getUrl(String host,Integer port){
+    public String getUrl(String host,Integer port){
         StringBuilder sb = new StringBuilder();
         sb.append("http://").append(host).append(":").append(port);
         return sb.toString();
     }
 
-    public static String getUrl(String host,Integer port, String... setting){
+    public String getUrl(String host,Integer port, String... setting){
         String url = getUrl(host, port);
         StringBuilder sb = new StringBuilder(url);
         for (String s:setting) {

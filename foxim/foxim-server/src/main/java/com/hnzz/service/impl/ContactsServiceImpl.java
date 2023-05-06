@@ -1,6 +1,8 @@
 package com.hnzz.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.hnzz.commons.base.enums.activity.ActivitiesField;
+import com.hnzz.commons.base.exception.AppException;
 import com.hnzz.commons.base.log.Log;
 import com.hnzz.dao.ContactsDao;
 import com.hnzz.dao.GroupDao;
@@ -11,6 +13,7 @@ import com.hnzz.entity.*;
 import com.hnzz.commons.base.enums.userenums.ContactStatus;
 import com.hnzz.form.ContactsForm;
 import com.hnzz.form.ForwardForm;
+import com.hnzz.service.ActivitiesService;
 import com.hnzz.service.ContactsService;
 import com.hnzz.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.*;
 
 import java.util.stream.Collectors;
@@ -45,6 +49,8 @@ public class ContactsServiceImpl implements ContactsService {
     private GroupUserDao groupUserDao;
     @Resource
     private UserService userService;
+    @Resource
+    private ActivitiesService activitiesService;
 
 
     @Override
@@ -167,12 +173,13 @@ public class ContactsServiceImpl implements ContactsService {
 
     @Override
     public Contacts addSave(String userId, String toId) {
+        Date date = new Date();
         Contacts contacts = new Contacts();
         contacts.setUserId(userId);
         contacts.setContactId(toId);
         contacts.setStatus(ContactStatus.ACCEPTED.getCode());
-        contacts.setRecentAt(new Date());
-        contacts.setCreatedAt(new Date());
+        contacts.setRecentAt(date);
+        contacts.setCreatedAt(date);
         return contactsDao.addSave(contacts);
     }
 
@@ -242,14 +249,7 @@ public class ContactsServiceImpl implements ContactsService {
         boolean existContacts = contactsDao.existContacts(userId, contactId);
         if (!existContacts) {
             UserDTO userDTO = userService.findUserById(contactId);
-            Contacts contacts = new Contacts();
-            contacts.setUserId(userId);
-            contacts.setContactId(contactId);
-            contacts.setRemark(userDTO.getRemark());
-            contacts.setFriendName(userDTO.getUsername());
-            contacts.setCreatedAt(new Date());
-            contacts.setHead(userDTO.getAvatarUrl());
-            contacts.setStatus(ContactStatus.PENDING.getCode());
+            Contacts contacts = new Contacts(userId , userDTO , ContactStatus.PENDING);
             return contactsDao.addContacts(contacts);
         }
         return null;
@@ -281,18 +281,29 @@ public class ContactsServiceImpl implements ContactsService {
         Contacts thisContacts = contactsDao.selectContacts(contactId, userId);
         if (thisContacts!=null) {
             if (Objects.equals(ContactStatus.PENDING.getCode() , thisContacts.getStatus())){
-                // 修改对方好友状态为同意
+                // 修改请求方好友状态为同意
                 contactsDao.agreeContacts(userId, contactId);
                 UserDTO userDTO = userService.findUserById(contactId);
-                Contacts contacts = new Contacts();
-                contacts.setUserId(userId);
-                contacts.setContactId(contactId);
-                contacts.setRemark(userDTO.getRemark());
-                contacts.setFriendName(userDTO.getUsername());
-                contacts.setCreatedAt(new Date());
-                contacts.setHead(userDTO.getAvatarUrl());
-                contacts.setStatus(ContactStatus.ACCEPTED.getCode());
-                return contactsDao.addContacts(contacts);
+                // 新建同意方与请求方的好友状态
+                Contacts contacts = new Contacts(userId,userDTO,ContactStatus.ACCEPTED);
+                contacts = contactsDao.addContacts(contacts);
+                // 请求方发送一条同意聊天的消息
+                String s = userDTO.getUsername() + "和您已经是好友啦 , 快开始聊天吧! ";
+                HashMap<String, String> payload = new HashMap<>(8);
+                payload.put(ActivitiesField.CONTACT_ID,contactId);
+                payload.put(ActivitiesField.USER_ID,userId);
+                payload.put(ActivitiesField.TEXT,s);
+                payload.put(ActivitiesField.ACTIVITY_CREATEDAT,new Date ().toString());
+                payload.put(ActivitiesField.TYPE,"agree");
+                String topic = Activities.topic("private", contactId, "agree");
+                Activities activities = new Activities(topic,payload);
+                try {
+                    activities = activitiesService.saveActivities(activities);
+                } catch (IOException e) {
+                    log.warn("编号为{}的消息发送失败",activities.getId());
+                    throw new AppException("添加好友消息发送失败!");
+                }
+                return contacts;
             }
         }
         return null;

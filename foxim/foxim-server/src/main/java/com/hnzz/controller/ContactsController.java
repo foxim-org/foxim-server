@@ -228,8 +228,7 @@ public class ContactsController {
             return ResponseEntity.ok("已经是好友, 无需重复添加");
         }
         UserDTO userById = userService.findUserById(userId);
-        StringBuilder sb = new StringBuilder();
-        String s = sb.append(userById.getUsername()).append("请求添加你为好友").toString();
+        String s = userById.getUsername() + "请求添加你为好友";
         HashMap<String, String> payload = new HashMap<>(8);
         payload.put(ActivitiesField.CONTACT_ID,friendId);
         payload.put(ActivitiesField.TEXT,s);

@@ -2,6 +2,8 @@ package com.hnzz.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.hnzz.commons.base.enums.userenums.ContactStatus;
+import com.hnzz.dto.UserDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -70,4 +72,27 @@ public class Contacts implements Serializable {
     private String documentUrl;
     @ApiModelProperty("图片链接")
     private String imgUrl;
+
+
+    public Contacts() {
+        super();
+    }
+    public Contacts(String userId , User friend , ContactStatus status){
+        this.setUserId(userId);
+        this.setContactId(friend.getId());
+        this.setRemark(friend.getUsername());
+        this.setFriendName(friend.getUsername());
+        this.setCreatedAt(new Date());
+        this.setHead(friend.getAvatarUrl());
+        this.setStatus(status.getCode());
+    }
+    public Contacts(String userId, UserDTO userDTO, ContactStatus status){
+        this.setUserId(userId);
+        this.setContactId(userDTO.getId());
+        this.setRemark(userDTO.getRemark());
+        this.setFriendName(userDTO.getUsername());
+        this.setCreatedAt(new Date());
+        this.setHead(userDTO.getAvatarUrl());
+        this.setStatus(status.getCode());
+    }
 }

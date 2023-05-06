@@ -72,7 +72,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         Map<String,Object> map = new HashMap<>(10);
         map.put("id",admin.getId());
         map.put("role",admin.getRole());
-        return jwtHelper.createJWT(new Date(System.currentTimeMillis() + 31536000000L), map);
+        return jwtHelper.createJWT(map);
     }
 
     @Override

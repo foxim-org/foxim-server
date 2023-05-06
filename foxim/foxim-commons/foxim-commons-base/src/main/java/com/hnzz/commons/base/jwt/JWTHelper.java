@@ -27,15 +27,16 @@ public class JWTHelper {
     @Value("${user.jwt}")
     private String signingKey;
 
+    @Value("${user.tokenExpiry}")
+    private Long tokenExpiry;
+
     /**
      * 用户登录成功后生成Jwt
      * 使用Hs256算法
-     *
-     * @param exp jwt过期时间
      * @param payload 保存在Payload（有效载荷）中的内容
      * @return token字符串
      */
-    public  String createJWT(Date exp, Map<String, Object> payload) {
+    public  String createJWT(Map<String, Object> payload) {
         //指定签名的时候使用的签名算法
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
@@ -49,7 +50,7 @@ public class JWTHelper {
                 //iat: jwt的签发时间
                 .setIssuedAt(now)
                 //设置过期时间
-                .setExpiration(exp)
+                .setExpiration(new Date(now.getTime()+tokenExpiry))
                 //设置签名使用的签名算法和签名使用的秘钥
                 .signWith(signatureAlgorithm, signingKey);
 

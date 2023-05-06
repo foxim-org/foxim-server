@@ -18,6 +18,7 @@ import com.hnzz.form.groupform.GroupId;
 import com.hnzz.form.groupform.QuitGroup;
 import com.hnzz.form.userform.LoginForm;
 import com.hnzz.form.userform.RegisterForm;
+import com.hnzz.form.userform.RegisterValidForm;
 import com.hnzz.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -346,7 +347,8 @@ public class  AdminUserController {
     @PostMapping("addNewUsers")
     @ApiOperation("新增用户")
     public ResponseEntity addNewUsers(@RequestHeader("adminId") String adminId, @RequestBody RegisterForm form) {
-        return ResponseEntity.ok(userService.register(form));
+        RegisterValidForm registerValidForm = BeanUtil.copyProperties(form, RegisterValidForm.class);
+        return ResponseEntity.ok(userService.register(registerValidForm));
     }
     @PostMapping("deleteUsers")
     @ApiOperation("删除用户")
