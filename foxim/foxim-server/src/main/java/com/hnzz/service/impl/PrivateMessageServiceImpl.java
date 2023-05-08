@@ -43,6 +43,7 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
             throw new AppException("您的这位好友不存在");
         }
         List<PrivateMessageDTO> privateMessageDTOS = new ArrayList<>();
+        List<PrivateMessageDTO> privateMessageDTOSa = new ArrayList<>();
         List<PrivateMessage> message = privateMessageDao.getAllPrivateMessageWithASC(userId, contactId, contacts.getDelTime());
         List<UserDTO> users = userService.getUsersById(Arrays.asList(userId, contactId));
         message.forEach(m->{
@@ -57,7 +58,14 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
                 privateMessageDTOS.add(pr);
             }
         });
-        return privateMessageDTOS;
+
+        for (int i = 0; i < privateMessageDTOS.size(); i++) {
+            if (privateMessageDTOS.get(i).getText()!=null){
+                privateMessageDTOSa.add(privateMessageDTOS.get(i));
+            }
+        }
+
+        return privateMessageDTOSa;
     }
 
     @Override
