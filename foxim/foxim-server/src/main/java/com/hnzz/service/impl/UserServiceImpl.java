@@ -197,7 +197,7 @@ public class UserServiceImpl implements UserService {
             throw new AppException("用户信息输入有误");
         }
         UserDTO userDTO = setUserInfo(new User().setId(user.getId()).setLoginIp(ipAddress).setLastLoginAt(new Date()).setStatusText(UserStatusText.LINE_ON.getCode()));
-        if (userDTO.getAvatarUrl()==null){
+        if (userDTO.getMoRenUrl()==null){
             Setting setting = settingService.lookUserAvatarUrl();
             userDTO.setMoRenUrl(setting.getValue());
         }
