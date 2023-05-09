@@ -78,9 +78,10 @@ public class SettingServerImpl implements SettingService {
     }
 
     @Override
-    public AboutWith saveAboutWith(String value) {
+    public AboutWith saveAboutWith(String userId,String value) {
         AboutWith aboutWith=new AboutWith();
         aboutWith.setCreatedAt(new Date())
+                 .setName("关于我们")
                  .setUpdateAt(new Date())
                  .setValue(value);
 
@@ -88,8 +89,8 @@ public class SettingServerImpl implements SettingService {
     }
 
     @Override
-    public Object findAboutWith(String aboutWithId) {
-        return template.find(new Query(Criteria.where("Id").is(aboutWithId)), AboutWith.class);
+    public Object findAboutWith() {
+        return template.find(new Query(Criteria.where("name").is("关于我们")), AboutWith.class);
     }
 
     @Override

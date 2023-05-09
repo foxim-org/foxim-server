@@ -30,6 +30,8 @@ public class AboutWith {
     @Field
     private String value;
     @Field
+    private String name;
+    @Field
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateAt;
     @Field

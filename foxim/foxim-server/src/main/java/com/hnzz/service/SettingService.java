@@ -16,9 +16,9 @@ public interface SettingService {
 
     ResponseEntity getSetting(String name);
 
-    AboutWith saveAboutWith(String value);
+    AboutWith saveAboutWith(String userId,String value);
 
-    Object findAboutWith(String aboutWithId);
+    Object findAboutWith();
 
     ResponseEntity getSet(String name);
 
