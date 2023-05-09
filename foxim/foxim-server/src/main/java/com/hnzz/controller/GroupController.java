@@ -51,7 +51,9 @@ public class GroupController {
     @GetMapping("/searchGroupInfo")
     @ApiOperation("根据群名称或群狐狸号搜索该群")
         public ResponseEntity<List<GroupSearchInfo>> searchGroupInfo(@RequestHeader("userId")String userId,@RequestParam("search")String search){
-        return ResponseEntity.ok(groupService.search(search,userId));
+        List<GroupSearchInfo> search1 = groupService.search(search, userId);
+
+        return ResponseEntity.ok(search1);
     }
 
     @PostMapping("/setGroupAvatarUrl")

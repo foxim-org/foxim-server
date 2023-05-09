@@ -2,10 +2,12 @@ package com.hnzz.service.impl;
 
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.json.JSONUtil;
+import com.hnzz.common.SeaweedFSUtil;
 import com.hnzz.commons.base.enums.system.SettingEnum;
 import com.hnzz.commons.base.exception.AppException;
 import com.hnzz.dao.SettingDao;
 import com.hnzz.entity.AboutWith;
+import com.hnzz.entity.FileInfo;
 import com.hnzz.entity.User;
 import com.hnzz.entity.system.*;
 import com.hnzz.service.SettingService;
@@ -14,6 +16,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -32,6 +35,9 @@ public class SettingServerImpl implements SettingService {
 
     @Resource
     private SettingDao settingDao;
+
+    @Resource
+    private SeaweedFSUtil seaweedFSUtil;
 
     @Override
     public Setting saveSetting(String settingName , String settingValue){
@@ -128,5 +134,19 @@ public class SettingServerImpl implements SettingService {
             default:
                 throw new AppException("不存在名为"+name+"的配置");
         }
+    }
+
+    @Override
+    public void saveLogoAvatarUrl(String userId,MultipartFile file) {
+        Setting setting = new Setting();
+        ResponseEntity<FileInfo> response = seaweedFSUtil.uploadFile(file);
+        FileInfo body = response.getBody();
+        if (body == null) {
+            throw new AppException("头像上传失败");
+        }
+        setting.setName("启动页Logo图片");
+        setting.setValue(body.getFileUrl());
+        setting.setOperator(userId);
+        template.save(setting);
     }
 }

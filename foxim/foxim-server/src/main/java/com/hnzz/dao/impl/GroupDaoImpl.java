@@ -4,6 +4,7 @@ import com.hnzz.commons.base.exception.AppException;
 import com.hnzz.dao.GroupDao;
 import com.hnzz.entity.Group;
 import com.hnzz.entity.GroupUsers;
+import com.hnzz.entity.User;
 import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -117,8 +118,12 @@ public class GroupDaoImpl implements GroupDao {
 
     @Override
     public List<Group> findGroupBySearch(String search) {
-        Query query = Query.query(Criteria.where("name").regex("*" + search + "*").orOperator(Criteria.where("foxCode").is(search)));
-        return mongoTemplate.find(query,Group.class);
+        if (search.length()==5){
+            Integer integer = Integer.valueOf(search);
+            return mongoTemplate.find(new Query(Criteria.where("foxCode").is(integer)), Group.class);
+        }else {
+            return mongoTemplate.find(new Query(Criteria.where("name").regex(".*" + search + ".*")),Group.class);
+        }
     }
 
 }
