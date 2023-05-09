@@ -15,13 +15,11 @@ import com.hnzz.dao.UserDao;
 import com.hnzz.dto.TimelineDto;
 import com.hnzz.dto.UserDTO;
 import com.hnzz.entity.*;
+import com.hnzz.entity.system.Setting;
 import com.hnzz.form.IdsPattern;
 import com.hnzz.form.Timelinefrom.ReplyFrom;
 import com.hnzz.form.userform.*;
-import com.hnzz.service.ActivitiesService;
-import com.hnzz.service.IdsService;
-import com.hnzz.service.SmsService;
-import com.hnzz.service.UserService;
+import com.hnzz.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,6 +59,8 @@ public class UserServiceImpl implements UserService {
     private Integer exp;
     @Resource
     private ActivitiesService activitiesService;
+    @Resource
+    private SettingService settingService;
     @Resource
     private UserDao userDao;
     @Resource
@@ -197,6 +197,10 @@ public class UserServiceImpl implements UserService {
             throw new AppException("用户信息输入有误");
         }
         UserDTO userDTO = setUserInfo(new User().setId(user.getId()).setLoginIp(ipAddress).setLastLoginAt(new Date()).setStatusText(UserStatusText.LINE_ON.getCode()));
+        if (userDTO.getAvatarUrl()==null){
+            Setting setting = settingService.lookUserAvatarUrl();
+            userDTO.setAvatarUrl(setting.getValue());
+        }
         Map<String, Object> map = BeanUtil.beanToMap(userDTO, new HashMap<>(), false, true);
         return jwtHelper.createJWT(map);
     }
