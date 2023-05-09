@@ -17,6 +17,7 @@ import com.hnzz.entity.system.UserRegisterSetting;
 import com.hnzz.form.userform.*;
 import com.hnzz.service.*;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -75,6 +76,15 @@ public class UserController  {
             }
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("暂时无法通过"+form.getRegisterType()+"方法注册");
+    }
+
+    @GetMapping("/setting/get/{name}")
+    @ApiImplicitParam(name = "key", value = "配置key", paramType = "path" , allowableValues = "REGISTER_SETTING , LOGIN_SETTING , WITH_USER_SETTING")
+    public ResponseEntity getSetting(@RequestHeader("ipAddr")String ipAddr,@PathVariable("name") String name){
+        if (ipAddr==null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ip不能为空");
+        }
+        return settingService.getSetting(name);
     }
 
     @PostMapping("registerMobile")
