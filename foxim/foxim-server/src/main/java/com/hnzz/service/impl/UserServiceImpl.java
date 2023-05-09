@@ -199,7 +199,7 @@ public class UserServiceImpl implements UserService {
         UserDTO userDTO = setUserInfo(new User().setId(user.getId()).setLoginIp(ipAddress).setLastLoginAt(new Date()).setStatusText(UserStatusText.LINE_ON.getCode()));
         if (userDTO.getAvatarUrl()==null){
             Setting setting = settingService.lookUserAvatarUrl();
-            userDTO.setAvatarUrl(setting.getValue());
+            userDTO.setMoRenUrl(setting.getValue());
         }
         Map<String, Object> map = BeanUtil.beanToMap(userDTO, new HashMap<>(), false, true);
         return jwtHelper.createJWT(map);
