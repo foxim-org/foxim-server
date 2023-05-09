@@ -10,6 +10,7 @@ import com.hnzz.dto.GroupUserAdmin;
 import com.hnzz.dto.MessageList;
 import com.hnzz.dto.UserDTO;
 import com.hnzz.entity.*;
+import com.hnzz.entity.system.Setting;
 import com.hnzz.form.AddAdminForm;
 import com.hnzz.form.AdminUserLoginForm;
 import com.hnzz.form.AdminUserRegisterForm;
@@ -57,6 +58,13 @@ public class  AdminUserController {
     private ContactsService contactsService;
     @Resource
     private SettingService settingService;
+
+    @PostMapping("lookLogoAvatarUrl")
+    @ApiOperation(("查看启动页Logo"))
+    public ResponseEntity<Object> lookLogoAvatarUrl(){
+        Setting setting = settingService.lookLogoAvatarUrl();
+        return ResponseEntity.ok(setting);
+    }
 
     @PostMapping("setLogoAvatarUrl")
     @ApiOperation(("修改启动页Logo"))

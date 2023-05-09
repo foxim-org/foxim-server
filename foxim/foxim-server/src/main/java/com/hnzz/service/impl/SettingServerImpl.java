@@ -138,15 +138,35 @@ public class SettingServerImpl implements SettingService {
 
     @Override
     public void saveLogoAvatarUrl(String userId,MultipartFile file) {
-        Setting setting = new Setting();
-        ResponseEntity<FileInfo> response = seaweedFSUtil.uploadFile(file);
-        FileInfo body = response.getBody();
-        if (body == null) {
-            throw new AppException("头像上传失败");
+
+        Setting operator = template.findOne(new Query(Criteria.where("operator").is(userId)), Setting.class);
+
+        if (operator==null){
+            Setting setting = new Setting();
+            ResponseEntity<FileInfo> response = seaweedFSUtil.uploadFile(file);
+            FileInfo body = response.getBody();
+            if (body == null) {
+                throw new AppException("头像上传失败");
+            }
+            setting.setName("启动页Logo图片");
+            setting.setValue(body.getFileUrl());
+            setting.setOperator(userId);
+            template.save(setting);
+        }else {
+            ResponseEntity<FileInfo> response = seaweedFSUtil.uploadFile(file);
+            FileInfo body = response.getBody();
+            if (body == null) {
+                throw new AppException("头像上传失败");
+            }
+            operator.setValue(body.getFileUrl());
+            template.save(operator);
         }
-        setting.setName("启动页Logo图片");
-        setting.setValue(body.getFileUrl());
-        setting.setOperator(userId);
-        template.save(setting);
+
+    }
+
+    @Override
+    public Setting lookLogoAvatarUrl() {
+        Setting operator = template.findOne(new Query(Criteria.where("name").is("启动页Logo图片")), Setting.class);
+        return operator;
     }
 }

@@ -23,4 +23,6 @@ public interface SettingService {
     ResponseEntity getSet(String name);
 
     void saveLogoAvatarUrl(String userId,MultipartFile file);
+
+    Setting lookLogoAvatarUrl();
 }

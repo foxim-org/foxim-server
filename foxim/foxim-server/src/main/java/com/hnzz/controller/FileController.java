@@ -6,6 +6,7 @@ import com.alibaba.nacos.shaded.com.google.gson.Gson;
 import com.hnzz.common.ResultUtil;
 import com.hnzz.common.SeaweedFSUtil;
 import com.hnzz.commons.base.exception.AppException;
+import com.hnzz.entity.AdminUser;
 import com.hnzz.entity.FileInfo;
 import com.hnzz.service.FileInfoService;
 import io.swagger.annotations.Api;
