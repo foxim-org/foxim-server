@@ -1,10 +1,13 @@
 package com.hnzz.service;
 
 import com.hnzz.entity.AboutWith;
+import com.hnzz.entity.Navigation;
 import com.hnzz.entity.system.Setting;
 import com.hnzz.entity.system.UserRegisterSetting;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * @author HB on 2023/5/5
@@ -29,4 +32,8 @@ public interface SettingService {
     void saveUserAvatarUrl(String userId, MultipartFile file);
 
     Setting lookUserAvatarUrl();
+
+    void saveNavigation(MultipartFile img, MultipartFile imgBright, String routing, String name);
+
+    List<Navigation> lookNavigation();
 }

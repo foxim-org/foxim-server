@@ -3,7 +3,6 @@ package com.hnzz.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
@@ -15,27 +14,25 @@ import java.util.Date;
 
 /**
  * @PackageName:com.hnzz.entity
- * @ClassName:AboutWith
+ * @ClassName:Navigation
  * @Author 冼大丰
- * @Date 2023/5/9 11:29
+ * @Date 2023/5/9 16:37
  * @Version 1.0
  **/
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-@Document("aboutWith")
-public class AboutWith implements Serializable {
+@Document("navigation")
+public class Navigation implements Serializable {
     @Id
     private String id;
     @Field
-    private String value;
+    private String routing;
     @Field
     private String name;
     @Field
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date updateAt;
+    private String img;
     @Field
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date createdAt;
+    private String imgBright;
 }
