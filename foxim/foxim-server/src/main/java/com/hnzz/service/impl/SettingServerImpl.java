@@ -79,13 +79,20 @@ public class SettingServerImpl implements SettingService {
 
     @Override
     public AboutWith saveAboutWith(String userId,String value) {
-        AboutWith aboutWith=new AboutWith();
-        aboutWith.setCreatedAt(new Date())
-                 .setName("关于我们")
-                 .setUpdateAt(new Date())
-                 .setValue(value);
+        AboutWith aboutWith = template.findOne(new Query(Criteria.where("name").is("关于我们")), AboutWith.class);
+        if (aboutWith!=null){
+            aboutWith.setValue(value)
+                    .setUpdateAt(new Date());
+            return template.save(aboutWith);
+        }else {
+            AboutWith aboutWith1=new AboutWith();
+            aboutWith1.setCreatedAt(new Date())
+                    .setName("关于我们")
+                    .setUpdateAt(new Date())
+                    .setValue(value);
 
-        return template.save(aboutWith);
+            return template.save(aboutWith1);
+        }
     }
 
     @Override
