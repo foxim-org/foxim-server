@@ -39,6 +39,9 @@ UserDTO implements Comparable<UserDTO>{
     @ApiModelProperty("状态")
     private String statusText;
 
+    @ApiModelProperty("默认头像")
+    private String moRenUrl;
+
     @ApiModelProperty("头像")
     private String avatarUrl;
 
