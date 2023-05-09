@@ -59,7 +59,7 @@ public class  AdminUserController {
     @Resource
     private SettingService settingService;
 
-    @PostMapping("lookLogoAvatarUrl")
+    @GetMapping("lookLogoAvatarUrl")
     @ApiOperation(("查看启动页Logo"))
     public ResponseEntity<Object> lookLogoAvatarUrl(){
         Setting setting = settingService.lookLogoAvatarUrl();
