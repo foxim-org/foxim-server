@@ -235,7 +235,8 @@ public class UserServiceImpl implements UserService {
         if (!user.getPassword().equals(oldPwd)) {
             throw new AppException("该用户输入的原有密码有误");
         }
-        template.save(user.setPassword(DigestUtil.sha256Hex(form.getNewPwd())), "user");
+        User objectToSave = user.setPassword(DigestUtil.sha256Hex(form.getNewPwd()));
+        template.save(objectToSave,"User");
     }
 
     @Override
