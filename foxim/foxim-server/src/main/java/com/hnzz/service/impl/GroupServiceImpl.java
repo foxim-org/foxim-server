@@ -203,6 +203,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public List<GroupSearchInfo> search(String search, String userId) {
         List<Group> groupBySearch = groupDao.findGroupBySearch(search);
+        System.out.println(groupBySearch);
         List<GroupSearchInfo> groupSearchInfos = new ArrayList<>();
         if (groupBySearch!=null && !groupBySearch.isEmpty()) {
             groupSearchInfos = BeanUtil.copyToList(groupBySearch, GroupSearchInfo.class);

@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -26,6 +27,7 @@ import java.util.List;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@Document("group")
 public class Group implements Serializable {
     /**
      * 群id
@@ -35,6 +37,7 @@ public class Group implements Serializable {
     /**
      * 群狐狸号
      */
+    @Field
     private Integer foxCode;
     /**
      * 群名称

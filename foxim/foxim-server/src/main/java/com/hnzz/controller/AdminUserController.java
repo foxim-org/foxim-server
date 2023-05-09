@@ -28,6 +28,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -56,6 +57,17 @@ public class  AdminUserController {
     private ContactsService contactsService;
     @Resource
     private SettingService settingService;
+
+    @PostMapping("setLogoAvatarUrl")
+    @ApiOperation(("修改启动页Logo"))
+    public ResponseEntity<Object> setUserAvatarUrl(@RequestHeader("adminId")String userId, @RequestParam("file") MultipartFile file){
+        AdminUser byId = adminUserService.findById(userId);
+        if (byId==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("无权访问该接口");
+        }
+        settingService.saveLogoAvatarUrl(userId,file);
+        return ResponseEntity.ok("上传成功");
+    }
 
 
     @PostMapping("/setting/AboutWith")
