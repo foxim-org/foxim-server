@@ -25,4 +25,8 @@ public interface SettingService {
     void saveLogoAvatarUrl(String userId,MultipartFile file);
 
     Setting lookLogoAvatarUrl();
+
+    void saveUserAvatarUrl(String userId, MultipartFile file);
+
+    Setting lookUserAvatarUrl();
 }

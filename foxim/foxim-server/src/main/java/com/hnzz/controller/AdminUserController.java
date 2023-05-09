@@ -68,7 +68,7 @@ public class  AdminUserController {
 
     @PostMapping("setLogoAvatarUrl")
     @ApiOperation(("修改启动页Logo"))
-    public ResponseEntity<Object> setUserAvatarUrl(@RequestHeader("adminId")String userId, @RequestParam("file") MultipartFile file){
+    public ResponseEntity<Object> setLogoAvatarUrl(@RequestHeader("adminId")String userId, @RequestParam("file") MultipartFile file){
         AdminUser byId = adminUserService.findById(userId);
         if (byId==null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("无权访问该接口");
@@ -77,6 +77,22 @@ public class  AdminUserController {
         return ResponseEntity.ok("上传成功");
     }
 
+    @PostMapping("setUserAvatarUrl")
+    @ApiOperation(("修改用户默认头像"))
+    public ResponseEntity<Object> setUserAvatarUrl(@RequestHeader("adminId")String userId, @RequestParam("file") MultipartFile file){
+        AdminUser byId = adminUserService.findById(userId);
+        if (byId==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("无权访问该接口");
+        }
+        settingService.saveUserAvatarUrl(userId,file);
+        return ResponseEntity.ok("上传成功");
+    }
+    @GetMapping("lookUserAvatarUrl")
+    @ApiOperation(("查看用户默认头像"))
+    public ResponseEntity<Object> lookUserAvatarUrl(){
+        Setting setting = settingService.lookUserAvatarUrl();
+        return ResponseEntity.ok(setting);
+    }
 
     @PostMapping("/setting/AboutWith")
     @ApiOperation("管理员编辑“关于我们")
