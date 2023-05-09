@@ -59,6 +59,46 @@ public class  AdminUserController {
     @Resource
     private SettingService settingService;
 
+    @PostMapping("lookNavigation")
+    @ApiOperation(("查看底部导航栏"))
+    public ResponseEntity<Object> lookNavigation(){
+        List<Navigation> navigations=settingService.lookNavigation();
+        return ResponseEntity.ok(navigations);
+    }
+
+//    @PostMapping("updateNavigation")
+//    @ApiOperation(("修改底部导航栏"))
+//    public ResponseEntity<Object> updateNavigation(@RequestHeader("adminId")String userId, @RequestParam("img") MultipartFile img,
+//                                                @RequestParam("imgBright") MultipartFile imgBright,@RequestParam("routing") String routing,
+//                                                @RequestParam("name") String name){
+//        AdminUser byId = adminUserService.findById(userId);
+//        if (byId==null){
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("无权访问该接口");
+//        }
+//        if (img.isEmpty()||imgBright.isEmpty()||routing.isEmpty()||name.isEmpty()){
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("传入数据不能为空");
+//        }
+//        settingService.saveNavigation(img,imgBright,routing,name);
+//        return ResponseEntity.ok("上传成功");
+//    }
+
+    @PostMapping("setNavigation")
+    @ApiOperation(("增加底部导航栏"))
+    public ResponseEntity<Object> setNavigation(@RequestHeader("adminId")String userId, @RequestParam("img") MultipartFile img,
+                                                @RequestParam("imgBright") MultipartFile imgBright,@RequestParam("routing") String routing,
+                                                @RequestParam("name") String name){
+        AdminUser byId = adminUserService.findById(userId);
+        if (byId==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("无权访问该接口");
+        }
+        if (img.isEmpty()||imgBright.isEmpty()||routing.isEmpty()||name.isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("传入数据不能为空");
+        }
+        settingService.saveNavigation(img,imgBright,routing,name);
+        return ResponseEntity.ok("上传成功");
+    }
+
+
     @GetMapping("lookLogoAvatarUrl")
     @ApiOperation(("查看启动页Logo"))
     public ResponseEntity<Object> lookLogoAvatarUrl(){

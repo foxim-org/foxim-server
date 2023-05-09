@@ -8,6 +8,7 @@ import com.hnzz.commons.base.exception.AppException;
 import com.hnzz.dao.SettingDao;
 import com.hnzz.entity.AboutWith;
 import com.hnzz.entity.FileInfo;
+import com.hnzz.entity.Navigation;
 import com.hnzz.entity.User;
 import com.hnzz.entity.system.*;
 import com.hnzz.service.SettingService;
@@ -209,5 +210,30 @@ public class SettingServerImpl implements SettingService {
     public Setting lookUserAvatarUrl() {
         Setting operator = template.findOne(new Query(Criteria.where("name").is("用户默认头像")), Setting.class);
         return operator;
+    }
+
+    @Override
+    public void saveNavigation(MultipartFile img, MultipartFile imgBright, String routing, String name) {
+            Navigation navigation =new Navigation();
+            ResponseEntity<FileInfo> response = seaweedFSUtil.uploadFile(img);
+            FileInfo imgBody = response.getBody();
+            if (imgBody == null) {
+                throw new AppException("头像上传失败");
+            }
+            ResponseEntity<FileInfo> responseEntity = seaweedFSUtil.uploadFile(imgBright);
+            FileInfo imgBrightBody = responseEntity.getBody();
+            if (imgBrightBody == null) {
+                throw new AppException("头像上传失败");
+            }
+            navigation.setImg(imgBody.getFileUrl())
+                    .setImgBright(imgBrightBody.getFileUrl())
+                    .setRouting(routing)
+                    .setName(name);
+            template.save(navigation);
+    }
+
+    @Override
+    public List<Navigation> lookNavigation() {
+        return template.findAll(Navigation.class);
     }
 }
