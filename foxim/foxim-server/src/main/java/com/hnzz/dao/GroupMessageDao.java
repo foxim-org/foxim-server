@@ -31,4 +31,6 @@ public interface GroupMessageDao {
      * @return
      */
     List<GroupMessage> getLastCroupMessagesByCreateAt(List<String> groupIds);
+
+    Object deleteMessages(String groupId);
 }

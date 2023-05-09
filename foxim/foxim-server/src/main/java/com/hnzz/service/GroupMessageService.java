@@ -17,4 +17,6 @@ public interface GroupMessageService {
     List<GroupMessageDTO> getAllGroupMessageWithASC(String groupId);
 
     Page<GroupMessage> getAllGroupMessageWithASC(String userId, String groupId , Integer pageNum, Integer pageSize);
+
+    Object deleteMessages(String groupId);
 }

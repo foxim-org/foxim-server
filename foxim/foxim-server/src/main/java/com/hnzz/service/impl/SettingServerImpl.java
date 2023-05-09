@@ -155,7 +155,7 @@ public class SettingServerImpl implements SettingService {
             ResponseEntity<FileInfo> response = seaweedFSUtil.uploadFile(file);
             FileInfo body = response.getBody();
             if (body == null) {
-                throw new AppException("头像上传失败");
+                throw new AppException("图片上传失败");
             }
             setting.setName("启动页Logo图片");
             setting.setValue(body.getFileUrl());
@@ -165,7 +165,7 @@ public class SettingServerImpl implements SettingService {
             ResponseEntity<FileInfo> response = seaweedFSUtil.uploadFile(file);
             FileInfo body = response.getBody();
             if (body == null) {
-                throw new AppException("头像上传失败");
+                throw new AppException("图片上传失败");
             }
             operator.setValue(body.getFileUrl());
             template.save(operator);
@@ -218,12 +218,12 @@ public class SettingServerImpl implements SettingService {
             ResponseEntity<FileInfo> response = seaweedFSUtil.uploadFile(img);
             FileInfo imgBody = response.getBody();
             if (imgBody == null) {
-                throw new AppException("头像上传失败");
+                throw new AppException("图片上传失败");
             }
             ResponseEntity<FileInfo> responseEntity = seaweedFSUtil.uploadFile(imgBright);
             FileInfo imgBrightBody = responseEntity.getBody();
             if (imgBrightBody == null) {
-                throw new AppException("头像上传失败");
+                throw new AppException("图片上传失败");
             }
             navigation.setImg(imgBody.getFileUrl())
                     .setImgBright(imgBrightBody.getFileUrl())
@@ -235,5 +235,37 @@ public class SettingServerImpl implements SettingService {
     @Override
     public List<Navigation> lookNavigation() {
         return template.findAll(Navigation.class);
+    }
+
+    @Override
+    public Navigation updateNavigation(String id,MultipartFile img, MultipartFile imgBright, String routing, String name) {
+        Navigation navigation = template.findOne(new Query(Criteria.where("id").is(id)), Navigation.class);
+
+        if (navigation==null){
+            throw new AppException("导航栏不存在");
+        }else {
+            if (!img.isEmpty()){
+                ResponseEntity<FileInfo> response = seaweedFSUtil.uploadFile(img);
+                FileInfo imgBody = response.getBody();
+                if (imgBody == null) {
+                    throw new AppException("图片上传失败");
+                }
+                navigation.setImg(imgBody.getFileUrl());
+            }else if (!imgBright.isEmpty()){
+                ResponseEntity<FileInfo> response = seaweedFSUtil.uploadFile(imgBright);
+                FileInfo imgBrightBody = response.getBody();
+                if (imgBrightBody == null) {
+                    throw new AppException("图片上传失败");
+                }
+                navigation.setImgBright(imgBrightBody.getFileUrl());
+            }else if (!routing.isEmpty()){
+                navigation.setRouting(routing);
+            }else if (!name.isEmpty()){
+                navigation.setName(name);
+            }
+
+        }
+
+        return template.save(navigation);
     }
 }

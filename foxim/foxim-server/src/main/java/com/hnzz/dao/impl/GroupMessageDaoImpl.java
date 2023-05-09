@@ -62,4 +62,10 @@ public class GroupMessageDaoImpl implements GroupMessageDao {
         List<GroupMessage> mappedResults = result.getMappedResults();
         return mappedResults;
     }
+
+    @Override
+    public Object deleteMessages(String groupId) {
+        Query query = new Query(Criteria.where("groupId").is(groupId));
+        return mongoTemplate.findAllAndRemove(query,GroupMessage.class);
+    }
 }
