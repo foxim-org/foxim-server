@@ -36,4 +36,6 @@ public interface SettingService {
     void saveNavigation(MultipartFile img, MultipartFile imgBright, String routing, String name);
 
     List<Navigation> lookNavigation();
+
+    Navigation updateNavigation(String id,MultipartFile img, MultipartFile imgBright, String routing, String name);
 }

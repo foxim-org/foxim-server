@@ -47,7 +47,6 @@ public class GroupController {
 
     @Resource
     private GroupMessageService groupMessageService;
-
     @GetMapping("/searchGroupInfo")
     @ApiOperation("根据群名称或群狐狸号搜索该群")
         public ResponseEntity<List<GroupSearchInfo>> searchGroupInfo(@RequestHeader("userId")String userId,@RequestParam("search")String search){
@@ -311,6 +310,20 @@ public class GroupController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("您不是该群成员 , 无权查看该群历史记录");
         }
         return  ResultUtil.resultToResponse(Result.success(groupMessageService.getAllGroupMessageWithASC(groupId)));
+    }
+
+    @GetMapping("/deleteMessages")
+    @ApiOperation("清空群聊历史记录")
+    public ResponseEntity deleteMessages(@RequestHeader("userId")String userId,@PathVariable("groupId") String groupId){
+        GroupUsers groupUsers = groupUserService.getGroupUserByUserId(userId, groupId);
+        if(groupUsers == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("您不是该群成员 , 无权查看该群历史记录");
+        }
+        Group groupById = groupService.getGroupById(groupId);
+        if (!userId.equals(groupById.getOwnerId())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("您不是群主,无权清空该群历史记录");
+        }
+        return  ResultUtil.resultToResponse(Result.success(groupMessageService.deleteMessages(groupId)));
     }
 
     /**

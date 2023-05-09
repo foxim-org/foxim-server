@@ -81,4 +81,9 @@ public class GroupMessageServiceImpl implements GroupMessageService {
         }
         return null;*/
     }
+
+    @Override
+    public Object deleteMessages(String groupId) {
+        return groupMessageDao.deleteMessages(groupId);
+    }
 }
