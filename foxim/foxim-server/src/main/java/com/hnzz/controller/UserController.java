@@ -243,7 +243,12 @@ public class UserController  {
 
     @GetMapping("/search")
     @ApiOperation("查找联系人")
-    public ResponseEntity selectById(@RequestHeader("userId") String userId,@RequestParam("userSearch") @Pattern(regexp = "^[0-9]*$",message = "只能根据手机号或狐狸号查找") @Valid String userSearch)  {
+    public ResponseEntity selectById(@RequestHeader("userId") String userId,@RequestParam("userSearch") String userSearch)  {
+
+        if (!userSearch.matches("\\d+")&&userSearch!=null&&!userSearch.isEmpty()) {
+            // 如果不是数字，返回错误信息
+            return ResponseEntity.badRequest().body("只能传入狐狸号或者手机号！");
+        }
 
         // 判断查询的用户是否存在
         User friend = userService.selectById(userSearch);
