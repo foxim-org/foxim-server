@@ -1,17 +1,24 @@
 package com.hnzz.service.impl;
 
+import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.json.JSONUtil;
 import com.hnzz.commons.base.enums.system.SettingEnum;
 import com.hnzz.commons.base.exception.AppException;
 import com.hnzz.dao.SettingDao;
+import com.hnzz.entity.AboutWith;
+import com.hnzz.entity.User;
 import com.hnzz.entity.system.Setting;
 import com.hnzz.entity.system.UserLoginSetting;
 import com.hnzz.entity.system.UserRegisterSetting;
 import com.hnzz.service.SettingService;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * @author HB on 2023/5/5
@@ -19,6 +26,10 @@ import javax.annotation.Resource;
  */
 @Service
 public class SettingServerImpl implements SettingService {
+
+    @Resource
+    private MongoTemplate template;
+
     @Resource
     private SettingDao settingDao;
 
@@ -58,5 +69,20 @@ public class SettingServerImpl implements SettingService {
             default:
                 throw new AppException("不存在名为"+name+"的配置");
         }
+    }
+
+    @Override
+    public AboutWith saveAboutWith(String value) {
+        AboutWith aboutWith=new AboutWith();
+        aboutWith.setCreatedAt(new Date())
+                 .setUpdateAt(new Date())
+                 .setValue(value);
+
+        return template.save(aboutWith);
+    }
+
+    @Override
+    public Object findAboutWith(String aboutWithId) {
+        return template.find(new Query(Criteria.where("Id").is(aboutWithId)), AboutWith.class);
     }
 }

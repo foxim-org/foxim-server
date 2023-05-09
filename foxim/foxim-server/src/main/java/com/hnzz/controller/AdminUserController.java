@@ -57,7 +57,21 @@ public class  AdminUserController {
     @Resource
     private SettingService settingService;
 
+
+    @PostMapping("/setting/AboutWith")
+    @ApiOperation("管理员编辑“关于我们")
+    public ResponseEntity AboutWith(@RequestHeader("adminId")String userId,@RequestParam String value){
+        AdminUser byId = adminUserService.findById(userId);
+        if (byId==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("无权访问该接口");
+        }
+        return ResponseEntity.ok(
+                settingService.saveAboutWith(value)
+        );
+    }
+
     @PostMapping("/setting/put/{name}")
+    @ApiOperation("设置方式")
     public ResponseEntity putSetting(@PathVariable("name")String name, @RequestBody String value){
 
         return ResponseEntity.ok(
@@ -66,6 +80,7 @@ public class  AdminUserController {
     }
 
     @GetMapping("/setting/get/{name}")
+    @ApiOperation("获取方式")
     @ApiImplicitParam(name = "key", value = "配置key", paramType = "path" , allowableValues = "REGISTER_SETTING , LOGIN_SETTING , WITH_USER_SETTING")
     public ResponseEntity getSetting(@PathVariable("name") String name){
         return settingService.getSetting(name);

@@ -11,6 +11,7 @@ import com.hnzz.commons.base.exception.AppException;
 import com.hnzz.commons.base.jwt.JWTHelper;
 import com.hnzz.commons.base.result.Result;
 import com.hnzz.dto.*;
+import com.hnzz.entity.AdminUser;
 import com.hnzz.entity.Contacts;
 import com.hnzz.entity.User;
 import com.hnzz.entity.system.UserRegisterSetting;
@@ -55,6 +56,19 @@ public class UserController  {
     private GroupService groupService;
     @Resource
     private SettingService settingService;
+
+
+    @GetMapping("/AboutWith")
+    @ApiOperation("查看“关于我们")
+
+    public ResponseEntity AboutWith(@RequestHeader("ipAddr")String ipAddr,@RequestParam String aboutWithId){
+        if (ipAddr==null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ip不能为空");
+        }
+        return ResponseEntity.ok(
+                settingService.findAboutWith(aboutWithId)
+        );
+    }
 
     @PostMapping("register")
     @ApiOperation("用户注册")

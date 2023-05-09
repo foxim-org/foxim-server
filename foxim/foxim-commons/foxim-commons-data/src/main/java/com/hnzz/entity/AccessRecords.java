@@ -11,7 +11,6 @@ import java.util.Date;
  * TODO 访问记录
  */
 @Data
-
 public class AccessRecords {
     @Id
     private String id;
