@@ -147,7 +147,7 @@ public class SettingServerImpl implements SettingService {
     @Override
     public void saveLogoAvatarUrl(String userId,MultipartFile file) {
 
-        Setting operator = template.findOne(new Query(Criteria.where("operator").is(userId)), Setting.class);
+        Setting operator = template.findOne(new Query(Criteria.where("name").is("启动页Logo图片")), Setting.class);
 
         if (operator==null){
             Setting setting = new Setting();
@@ -175,6 +175,39 @@ public class SettingServerImpl implements SettingService {
     @Override
     public Setting lookLogoAvatarUrl() {
         Setting operator = template.findOne(new Query(Criteria.where("name").is("启动页Logo图片")), Setting.class);
+        return operator;
+    }
+
+    @Override
+    public void saveUserAvatarUrl(String userId, MultipartFile file) {
+        Setting operator = template.findOne(new Query(Criteria.where("name").is("用户默认头像")), Setting.class);
+
+        if (operator==null){
+            Setting setting = new Setting();
+            ResponseEntity<FileInfo> response = seaweedFSUtil.uploadFile(file);
+            FileInfo body = response.getBody();
+            if (body == null) {
+                throw new AppException("头像上传失败");
+            }
+            setting.setName("用户默认头像");
+            setting.setValue(body.getFileUrl());
+            setting.setOperator(userId);
+            template.save(setting);
+        }else {
+            ResponseEntity<FileInfo> response = seaweedFSUtil.uploadFile(file);
+            FileInfo body = response.getBody();
+            if (body == null) {
+                throw new AppException("头像上传失败");
+            }
+            operator.setValue(body.getFileUrl());
+            template.save(operator);
+        }
+
+    }
+
+    @Override
+    public Setting lookUserAvatarUrl() {
+        Setting operator = template.findOne(new Query(Criteria.where("name").is("用户默认头像")), Setting.class);
         return operator;
     }
 }
