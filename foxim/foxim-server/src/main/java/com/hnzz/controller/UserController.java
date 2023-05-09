@@ -98,7 +98,7 @@ public class UserController  {
         if (ipAddr==null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ip不能为空");
         }
-        return settingService.getSetting(name);
+        return settingService.getSet(name);
     }
 
     @PostMapping("registerMobile")

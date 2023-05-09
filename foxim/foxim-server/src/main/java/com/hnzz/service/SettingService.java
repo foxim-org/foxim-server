@@ -18,4 +18,6 @@ public interface SettingService {
     AboutWith saveAboutWith(String value);
 
     Object findAboutWith(String aboutWithId);
+
+    ResponseEntity getSet(String name);
 }
