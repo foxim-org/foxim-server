@@ -7,9 +7,7 @@ import com.hnzz.commons.base.exception.AppException;
 import com.hnzz.dao.SettingDao;
 import com.hnzz.entity.AboutWith;
 import com.hnzz.entity.User;
-import com.hnzz.entity.system.Setting;
-import com.hnzz.entity.system.UserLoginSetting;
-import com.hnzz.entity.system.UserRegisterSetting;
+import com.hnzz.entity.system.*;
 import com.hnzz.service.SettingService;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -18,7 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author HB on 2023/5/5
@@ -84,5 +84,49 @@ public class SettingServerImpl implements SettingService {
     @Override
     public Object findAboutWith(String aboutWithId) {
         return template.find(new Query(Criteria.where("Id").is(aboutWithId)), AboutWith.class);
+    }
+
+    @Override
+    public ResponseEntity getSet(String name) {
+        SettingEnum settingEnum = SettingEnum.valueOf(name);
+        Setting setting = settingDao.getSettingByName(name);
+        switch (settingEnum) {
+            case LOGIN_SETTING:
+                if (setting==null){
+                    ResponseEntity.ok(new UserLoginSetting());
+                }else {
+                    UserLoginSetting userLoginSetting = JSONUtil.toBean(setting.getValue(), UserLoginSetting.class);
+                    List<UserLoginSettingItem> userLoginType = userLoginSetting.getUserLoginType();
+                    List<UserLoginSettingItem> userLoginSettingItems=new ArrayList<>();
+                    for (int i = 0; i < userLoginType.size(); i++) {
+                        if (userLoginType.get(i).getUsed()){
+                            userLoginSettingItems.add(userLoginType.get(i));
+                        }
+                    }
+                    return ResponseEntity.ok(userLoginSettingItems);
+                }
+
+            case REGISTER_SETTING:
+                if (setting==null){
+                    ResponseEntity.ok(new UserRegisterSetting());
+                }else {
+                    UserRegisterSetting userRegisterSetting = JSONUtil.toBean(setting.getValue(), UserRegisterSetting.class);
+
+                    List<UserRegisterSettingItem> userRegisterType = userRegisterSetting.getUserRegisterType();
+                    List<UserRegisterSettingItem> userRegisterSettingItems=new ArrayList<>();
+                    for (int i = 0; i < userRegisterType.size(); i++) {
+                        if (userRegisterType.get(i).isUsed()){
+                            userRegisterSettingItems.add(userRegisterType.get(i));
+                        }
+                    }
+                    return ResponseEntity.ok(userRegisterSettingItems);
+                }
+            case WITH_USER_SETTING:
+                return setting==null ?
+                        ResponseEntity.ok("") :
+                        ResponseEntity.ok(setting.getValue());
+            default:
+                throw new AppException("不存在名为"+name+"的配置");
+        }
     }
 }
