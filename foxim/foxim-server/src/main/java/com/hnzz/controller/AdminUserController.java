@@ -86,7 +86,7 @@ public class  AdminUserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("无权访问该接口");
         }
         return ResponseEntity.ok(
-                settingService.saveAboutWith(value)
+                settingService.saveAboutWith(userId,value)
         );
     }
 

@@ -60,12 +60,12 @@ public class UserController  {
 
     @GetMapping("/AboutWith")
     @ApiOperation("查看“关于我们")
-    public ResponseEntity AboutWith(@RequestHeader("ipAddr")String ipAddr,@RequestParam String aboutWithId){
+    public ResponseEntity AboutWith(@RequestHeader("ipAddr")String ipAddr){
         if (ipAddr==null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ip不能为空");
         }
         return ResponseEntity.ok(
-                settingService.findAboutWith(aboutWithId)
+                settingService.findAboutWith()
         );
     }
 
