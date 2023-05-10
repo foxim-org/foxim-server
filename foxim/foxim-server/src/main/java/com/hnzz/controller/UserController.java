@@ -91,14 +91,14 @@ public class UserController  {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("暂时无法通过"+form.getRegisterType()+"方法注册");
     }
 
-    @GetMapping("/setting/get/{name}")
-    @ApiImplicitParam(name = "key", value = "配置key", paramType = "path" , allowableValues = "REGISTER_SETTING , LOGIN_SETTING , WITH_USER_SETTING")
-    public ResponseEntity getSetting(@RequestHeader("ipAddr")String ipAddr,@PathVariable("name") String name){
-        if (ipAddr==null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ip不能为空");
-        }
-        return settingService.getSet(name);
-    }
+//    @GetMapping("/setting/get/{name}")
+//    @ApiImplicitParam(name = "key", value = "配置key", paramType = "path" , allowableValues = "REGISTER_SETTING , LOGIN_SETTING , WITH_USER_SETTING")
+//    public ResponseEntity getSetting(@RequestHeader("ipAddr")String ipAddr,@PathVariable("name") String name){
+//        if (ipAddr==null){
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ip不能为空");
+//        }
+//        return settingService.getSet(name);
+//    }
 
     @PostMapping("registerMobile")
     @ApiOperation("用户手机号验证码注册接口")

@@ -3,6 +3,7 @@ package com.hnzz.entity.system;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author HB on 2023/5/5
@@ -11,5 +12,5 @@ import java.util.List;
 @Data
 public class UserLoginSetting {
 
-    private List<UserLoginSettingItem> userLoginType;
+    private Map<String,Boolean> userLoginType;
 }
