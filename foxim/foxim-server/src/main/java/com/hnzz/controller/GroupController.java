@@ -94,7 +94,7 @@ public class GroupController {
      * 同意群申请
      *
      */
-    @PostMapping("/agreeGroup")
+    @GetMapping("/agreeGroup")
     @ApiOperation("同意群申请")
     public ResponseEntity agreeContacts(@RequestParam("groupId") String groupId,@RequestParam("joinUserId") String joinUserId, @RequestHeader("userId") String userId) {
 
