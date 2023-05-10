@@ -3,6 +3,7 @@ package com.hnzz.dao.impl;
 import com.hnzz.commons.base.exception.AppException;
 import com.hnzz.dao.GroupDao;
 import com.hnzz.entity.Group;
+import com.hnzz.entity.GroupApplicationForm;
 import com.hnzz.entity.GroupUsers;
 import com.hnzz.entity.User;
 import org.springframework.data.domain.*;
@@ -124,6 +125,28 @@ public class GroupDaoImpl implements GroupDao {
         }else {
             return mongoTemplate.find(new Query(Criteria.where("name").regex(".*" + search + ".*")),Group.class);
         }
+    }
+
+    @Override
+    public void saveGroupApplicationFrom(GroupApplicationForm groupApplicationForm) {
+        mongoTemplate.save(groupApplicationForm);
+    }
+
+    @Override
+    public List<GroupApplicationForm> getGroupApplicationFrom(List<String> groups) {
+        return mongoTemplate.find(new Query(Criteria.where("groupId").in(groups)), GroupApplicationForm.class);
+    }
+
+    @Override
+    public GroupApplicationForm findGroupApplicationForm(String groupId, String joinUserId) {
+        Criteria criteria=new Criteria();
+        criteria.andOperator(Criteria.where("userId").is(joinUserId),Criteria.where("groupId").is(groupId));
+        return mongoTemplate.findOne(new Query(criteria).with(Sort.by(Sort.Direction.ASC,"createdAt")),GroupApplicationForm.class);
+    }
+
+    @Override
+    public void saveGroupApplication(GroupApplicationForm groupApplicationForm) {
+        mongoTemplate.save(groupApplicationForm);
     }
 
 }

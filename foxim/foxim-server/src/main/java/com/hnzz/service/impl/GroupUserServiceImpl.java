@@ -318,5 +318,12 @@ public class GroupUserServiceImpl implements GroupUserService {
         return groupUserDao.isGroupUser(groupId, userId);
     }
 
+    @Override
+    public List<GroupUsers> getGroupUserByGroupIds(List<String> groupIds, String userId) {
+        Criteria criteria=new Criteria();
+        criteria.andOperator(Criteria.where("groupId").in(groupIds),Criteria.where("userId").is(userId));
+        return mongoTemplate.find(new Query(criteria),GroupUsers.class);
+    }
+
 
 }

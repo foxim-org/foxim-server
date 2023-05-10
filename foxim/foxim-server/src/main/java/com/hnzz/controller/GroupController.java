@@ -5,10 +5,7 @@ import com.hnzz.commons.base.enums.activity.ActivitiesField;
 import com.hnzz.commons.base.exception.AppException;
 import com.hnzz.commons.base.result.Result;
 import com.hnzz.dto.*;
-import com.hnzz.entity.Activities;
-import com.hnzz.entity.Contacts;
-import com.hnzz.entity.Group;
-import com.hnzz.entity.GroupUsers;
+import com.hnzz.entity.*;
 
 import com.hnzz.form.groupform.*;
 import com.hnzz.service.*;
@@ -57,11 +54,68 @@ public class GroupController {
     @Resource
     private GroupMessageService groupMessageService;
 
+
+    @GetMapping("/groupRequests")
+    @ApiOperation("查看群申请列表")
+    public ResponseEntity contactsRequests(@RequestHeader("userId") String userId) {
+        if (userId == null) {
+            return ResultUtil.response(HttpStatus.NOT_FOUND, "用户Id不存在!");
+        }
+        List<GroupData> groupByUserId = groupService.getGroupByUserId(userId);
+        List<String> groupIds=new ArrayList<>();
+        for (GroupData groupData : groupByUserId) {
+            groupIds.add(groupData.getId());
+        }
+        List<GroupUsers> groupUserByUserId = groupUserService.getGroupUserByGroupIds(groupIds, userId);
+        List<String> groups=new ArrayList<>();
+        for (GroupUsers groupUsers:groupUserByUserId) {
+            if (groupUsers.getIsAdmin()){
+                groups.add(groupUsers.getGroupId());
+            }
+        }
+        return ResponseEntity.ok(groupService.getGroupApplicationFrom(groups));
+    }
+
+    /**
+     * 同意群申请
+     *
+
+     */
+    @PostMapping("/agreeGroup")
+    @ApiOperation("同意群申请")
+    public ResponseEntity agreeContacts(@RequestParam("groupId") String groupId,@RequestParam("joinUserId") String joinUserId, @RequestHeader("userId") String userId) {
+
+        GroupUsers groupUserByUserId = groupUserService.getGroupUserByUserId(joinUserId, groupId);
+        // 判断a和b是否存在好友关系
+        if (groupUserByUserId!=null){
+            return ResultUtil.response(HttpStatus.INTERNAL_SERVER_ERROR,"该用户已存在该群");
+        }
+        GroupUsers groupAdmin = groupUserService.getGroupUserByUserId(userId, groupId);
+
+        if (groupAdmin==null|| !groupAdmin.getIsAdmin()){
+            return ResultUtil.response(HttpStatus.INTERNAL_SERVER_ERROR,"您不在该群或您没有该权限");
+        }
+
+        GroupApplicationForm groupApplicationForm = groupService.findGroupApplicationForm(groupId,joinUserId);
+
+        if (groupApplicationForm==null||groupApplicationForm.getStatus().equals("ACCEPTED")){
+            return ResultUtil.response(HttpStatus.INTERNAL_SERVER_ERROR,"没有该申请记录或已删除或已同意申请");
+        }
+        groupApplicationForm.setStatus("ACCEPTED")
+                .setUpdateAt(new Date());
+
+        groupService.saveGroupApplication(groupApplicationForm);
+        List<String> joinUserIds=new ArrayList<>();
+        joinUserIds.add(joinUserId);
+        groupUserService.joinGroupByGid(groupId,joinUserIds);
+
+        return ResponseEntity.ok("已同意该用户加入群发送成功！");
+
+    }
+
     /**
      * 发送添加群申请
      *
-     * @param
-     * @return
      */
     @GetMapping("/addGroup/{groupId}")
     @ApiOperation("发送添加群申请")
@@ -73,9 +127,9 @@ public class GroupController {
 
         List<GroupUsers> adminGroupUserByGroupId=new ArrayList<>();
         if (groupUserByGroupId != null) {
-            for (int i = 0; i < groupUserByGroupId.size(); i++) {
-                if (groupUserByGroupId.get(i).getIsAdmin()){
-                    adminGroupUserByGroupId.add(groupUserByGroupId.get(i));
+            for (GroupUsers groupUsers : groupUserByGroupId) {
+                if (groupUsers.getIsAdmin()) {
+                    adminGroupUserByGroupId.add(groupUsers);
                 }
             }
         }
@@ -89,17 +143,18 @@ public class GroupController {
         payload.put(ActivitiesField.TEXT,s);
         payload.put(ActivitiesField.ACTIVITY_CREATEDAT,new Date ().toString());
         payload.put(ActivitiesField.TYPE,"addGroup");
-        for (int i = 0; i < adminGroupUserByGroupId.size(); i++) {
-            String topic = Activities.topic("private",adminGroupUserByGroupId.get(i).getUserId(), "addGroup");
-            Activities activities = new Activities(topic,payload);
+        for (GroupUsers groupUsers : adminGroupUserByGroupId) {
+            String topic = Activities.topic("private", groupUsers.getUserId(), "addGroup");
+            Activities activities = new Activities(topic, payload);
             try {
                 activities = activitiesService.saveActivities(activities);
             } catch (IOException e) {
-                log.warn("编号为{}的消息发送失败",activities.getId());
+                log.warn("编号为{}的消息发送失败", activities.getId());
                 throw new AppException("加入群发送失败!");
             }
         }
-        return ResponseEntity.ok("加入群发送成功！");
+        groupService.saveGroupApplicationFrom(groupById,userId);
+        return ResponseEntity.ok("申请加入群发送成功！");
     }
 
 
@@ -117,7 +172,7 @@ public class GroupController {
 
         GroupUsers groupUserByUserId = groupUserService.getGroupUserByUserId(userId, groupId);
 
-        if (!groupUserByUserId.getIsAdmin()||groupUserByUserId==null) {
+        if (!groupUserByUserId.getIsAdmin()) {
             return ResultUtil.response(HttpStatus.INTERNAL_SERVER_ERROR,"该用户不存在或没有该权限");
         }
         Group group = groupService.setGroupAvatarUrl(groupId, file);
@@ -225,10 +280,10 @@ public class GroupController {
     public ResponseEntity silentAll(@RequestHeader("userId")String userId,@RequestParam GroupId groupId){
         Group groupById = groupService.getGroupById(groupId.getGroupId());
         GroupUsers groupUserByUserId = groupUserService.getGroupUserByUserId(userId, groupId.getGroupId());
-        if (!userId.equals(groupById.getOwnerId())&&groupUserByUserId.getIsAdmin()==false){
+        if (!userId.equals(groupById.getOwnerId())&& !groupUserByUserId.getIsAdmin()){
             throw new AppException("您没有权限执行此操作！");
         }
-        if (groupById.getIsSilencedToAll()==false){
+        if (!groupById.getIsSilencedToAll()){
             groupById.setIsSilencedToAll(true);
             groupService.save(groupById);
             return ResponseEntity.ok("设置全局禁言成功!");
@@ -245,7 +300,7 @@ public class GroupController {
     public ResponseEntity silent(@RequestHeader("userId")String userId,@RequestParam String groupId,@RequestParam String toId,@RequestParam Date date){
         Group groupById = groupService.getGroupById(groupId);
         GroupUsers groupUserByUserId = groupUserService.getGroupUserByUserId(userId, groupId);
-        if (!userId.equals(groupById.getOwnerId())&&groupUserByUserId.getIsAdmin()==false){
+        if (!userId.equals(groupById.getOwnerId())&& !groupUserByUserId.getIsAdmin()){
             throw new AppException("您没有权限执行此操作！");
         }
         GroupUsers groupUserByToId = groupUserService.getGroupUserByUserId(toId, groupId);
@@ -263,7 +318,7 @@ public class GroupController {
     public ResponseEntity notSilent(@RequestHeader("userId")String userId,@RequestParam String groupId,@RequestParam String toId) {
         Group groupById = groupService.getGroupById(groupId);
         GroupUsers groupUserByUserId = groupUserService.getGroupUserByUserId(userId, groupId);
-        if (!userId.equals(groupById.getOwnerId()) && groupUserByUserId.getIsAdmin() == false) {
+        if (!userId.equals(groupById.getOwnerId()) && !groupUserByUserId.getIsAdmin()) {
             throw new AppException("您没有权限执行此操作！");
         }
         GroupUsers groupUserByToId = groupUserService.getGroupUserByUserId(toId, groupId);
@@ -520,7 +575,6 @@ public class GroupController {
 
     /**
      * 退出群聊
-     * @param groupId
      */
     @PostMapping("/quit")
     @ApiOperation("用户退出群聊")
@@ -545,7 +599,6 @@ public class GroupController {
 
     /**
      * 设置群管理员
-     * @param joinGroup
      */
     @PostMapping("/setmod")
     @ApiOperation("设置群管理员")
@@ -563,9 +616,9 @@ public class GroupController {
             return ResultUtil.response(HttpStatus.INTERNAL_SERVER_ERROR,"没有查到该群或者该群没有该用户！");
         }
 
-        for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getIsAdmin()){
-                return ResultUtil.response(HttpStatus.INTERNAL_SERVER_ERROR,"该用户是管理员身份！");
+        for (GroupUsers user : users) {
+            if (user.getIsAdmin()) {
+                return ResultUtil.response(HttpStatus.INTERNAL_SERVER_ERROR, "该用户是管理员身份！");
             }
         }
 
@@ -577,7 +630,6 @@ public class GroupController {
 
     /**
      * 取消群管理员
-     * @param joinGroup
      */
     @PostMapping("/unsetmod")
     @ApiOperation("取消群管理员")
@@ -603,7 +655,6 @@ public class GroupController {
 
     /**
      * 更新群资料
-     * @param updateGroup
      */
     @PostMapping("/update")
     @ApiOperation("更新群资料")
@@ -640,7 +691,6 @@ public class GroupController {
 
     /**
      * 查看群成员
-     * @param groupId
      */
     @GetMapping("/users")
     @ApiOperation("查看群成员")
@@ -657,7 +707,6 @@ public class GroupController {
 
     /**
      * 踢出群成员
-     * @param joinGroup
      */
     @PostMapping("/kick")
     @ApiOperation("踢出群成员")

@@ -2,6 +2,7 @@ package com.hnzz.dao;
 
 
 import com.hnzz.entity.Group;
+import com.hnzz.entity.GroupApplicationForm;
 import com.hnzz.entity.GroupUsers;
 import org.springframework.data.domain.Pageable;
 
@@ -43,4 +44,12 @@ public interface GroupDao  {
     void save(Group groupById);
 
     List<Group> findGroupBySearch(String search);
+
+    void saveGroupApplicationFrom(GroupApplicationForm groupApplicationForm);
+
+    List<GroupApplicationForm> getGroupApplicationFrom(List<String> groups);
+
+    GroupApplicationForm findGroupApplicationForm(String groupId, String joinUserId);
+
+    void saveGroupApplication(GroupApplicationForm groupApplicationForm);
 }

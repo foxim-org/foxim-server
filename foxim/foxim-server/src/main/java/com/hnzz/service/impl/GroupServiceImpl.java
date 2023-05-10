@@ -10,6 +10,7 @@ import com.hnzz.dto.GroupData;
 import com.hnzz.dto.GroupSearchInfo;
 import com.hnzz.entity.FileInfo;
 import com.hnzz.entity.Group;
+import com.hnzz.entity.GroupApplicationForm;
 import com.hnzz.entity.GroupUsers;
 import com.hnzz.form.IdsPattern;
 import com.hnzz.form.groupform.NewGroup;
@@ -212,5 +213,43 @@ public class GroupServiceImpl implements GroupService {
             }
         }
         return groupSearchInfos;
+    }
+
+    @Override
+    public void saveGroupApplicationFrom(Group groupById, String userId) {
+        GroupApplicationForm groupApplicationForm=new GroupApplicationForm();
+        groupApplicationForm.setGroupId(groupById.getId())
+                .setStatus("PENDING")
+                .setUserId(userId)
+                .setFoxCode(groupById.getFoxCode())
+                .setCreatedAt(new Date())
+                .setUpdateAt(new Date());
+        groupDao.saveGroupApplicationFrom(groupApplicationForm);
+
+    }
+
+    @Override
+    public List<GroupApplicationForm> getGroupApplicationFrom(List<String> groups) {
+        List<GroupApplicationForm> groupApplicationFrom = groupDao.getGroupApplicationFrom(groups);
+        List<GroupApplicationForm> groupApplication=new ArrayList<>();
+        if (!groupApplicationFrom.isEmpty()){
+            for (int i = 0; i < groupApplicationFrom.size(); i++) {
+                if (groupApplicationFrom.get(i).getStatus().equals("PENDING")){
+                    groupApplication.add(groupApplicationFrom.get(i));
+                }
+                return groupApplication;
+            }
+        }
+        return groupApplicationFrom;
+    }
+
+    @Override
+    public GroupApplicationForm findGroupApplicationForm(String groupId, String joinUserId) {
+        return groupDao.findGroupApplicationForm(groupId,joinUserId);
+    }
+
+    @Override
+    public void saveGroupApplication(GroupApplicationForm groupApplicationForm) {
+        groupDao.saveGroupApplication(groupApplicationForm);
     }
 }
