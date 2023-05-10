@@ -1,16 +1,17 @@
 package com.hnzz.controller;
 
 import com.hnzz.common.ResultUtil;
+import com.hnzz.commons.base.enums.activity.ActivitiesField;
 import com.hnzz.commons.base.exception.AppException;
 import com.hnzz.commons.base.result.Result;
 import com.hnzz.dto.*;
+import com.hnzz.entity.Activities;
+import com.hnzz.entity.Contacts;
 import com.hnzz.entity.Group;
 import com.hnzz.entity.GroupUsers;
 
 import com.hnzz.form.groupform.*;
-import com.hnzz.service.GroupMessageService;
-import com.hnzz.service.GroupService;
-import com.hnzz.service.GroupUserService;
+import com.hnzz.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -22,8 +23,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -43,15 +46,68 @@ public class GroupController {
     private GroupService groupService;
 
     @Resource
+    private UserService userService;
+
+    @Resource
     private GroupUserService groupUserService;
 
     @Resource
+    private ActivitiesService activitiesService;
+
+    @Resource
     private GroupMessageService groupMessageService;
+
+    /**
+     * 发送添加群申请
+     *
+     * @param
+     * @return
+     */
+    @GetMapping("/addGroup/{groupId}")
+    @ApiOperation("发送添加群申请")
+    public ResponseEntity addContacts(@PathVariable("groupId")String groupId, @RequestHeader("userId") String userId) {
+        // 判断群是否存在
+        Group groupById = groupService.getGroupById(groupId);
+
+        List<GroupUsers> groupUserByGroupId = groupUserService.getGroupUserByGroupId(groupId);
+
+        List<GroupUsers> adminGroupUserByGroupId=new ArrayList<>();
+        if (groupUserByGroupId != null) {
+            for (int i = 0; i < groupUserByGroupId.size(); i++) {
+                if (groupUserByGroupId.get(i).getIsAdmin()){
+                    adminGroupUserByGroupId.add(groupUserByGroupId.get(i));
+                }
+            }
+        }
+        if (groupById == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body( "该群不存在");
+        }
+        UserDTO userById = userService.findUserById(userId);
+        String s = userById.getUsername() + "请求加入群聊";
+        HashMap<String, String> payload = new HashMap<>(8);
+        payload.put(ActivitiesField.GROUP_ID,groupId);
+        payload.put(ActivitiesField.TEXT,s);
+        payload.put(ActivitiesField.ACTIVITY_CREATEDAT,new Date ().toString());
+        payload.put(ActivitiesField.TYPE,"addGroup");
+        for (int i = 0; i < adminGroupUserByGroupId.size(); i++) {
+            String topic = Activities.topic("private",adminGroupUserByGroupId.get(i).getUserId(), "addGroup");
+            Activities activities = new Activities(topic,payload);
+            try {
+                activities = activitiesService.saveActivities(activities);
+            } catch (IOException e) {
+                log.warn("编号为{}的消息发送失败",activities.getId());
+                throw new AppException("加入群发送失败!");
+            }
+        }
+        return ResponseEntity.ok("加入群发送成功！");
+    }
+
+
+
     @GetMapping("/searchGroupInfo")
     @ApiOperation("根据群名称或群狐狸号搜索该群")
         public ResponseEntity<List<GroupSearchInfo>> searchGroupInfo(@RequestHeader("userId")String userId,@RequestParam("search")String search){
         List<GroupSearchInfo> search1 = groupService.search(search, userId);
-
         return ResponseEntity.ok(search1);
     }
 
@@ -312,7 +368,7 @@ public class GroupController {
         return  ResultUtil.resultToResponse(Result.success(groupMessageService.getAllGroupMessageWithASC(groupId)));
     }
 
-    @GetMapping("/deleteMessages")
+    @GetMapping("/deleteMessages/{groupId}")
     @ApiOperation("清空群聊历史记录")
     public ResponseEntity deleteMessages(@RequestHeader("userId")String userId,@PathVariable("groupId") String groupId){
         GroupUsers groupUsers = groupUserService.getGroupUserByUserId(userId, groupId);

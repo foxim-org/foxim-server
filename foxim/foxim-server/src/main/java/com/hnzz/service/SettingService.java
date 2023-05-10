@@ -23,7 +23,7 @@ public interface SettingService {
 
     Object findAboutWith();
 
-    ResponseEntity getSet(String name);
+//    ResponseEntity getSet(String name);
 
     void saveLogoAvatarUrl(String userId,MultipartFile file);
 

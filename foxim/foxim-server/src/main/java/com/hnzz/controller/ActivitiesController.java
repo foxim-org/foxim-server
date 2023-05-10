@@ -24,7 +24,7 @@ import java.io.IOException;
  */
 @Slf4j
 @RestController
-@RequestMapping("api/vi/activities")
+@RequestMapping("api/v1/activities")
 @Api(tags = "消息推送接口")
 public class ActivitiesController {
 

@@ -146,7 +146,6 @@ public class  AdminUserController {
     @PostMapping("/setting/put/{name}")
     @ApiOperation("设置方式")
     public ResponseEntity putSetting(@PathVariable("name")String name, @RequestBody String value){
-
         return ResponseEntity.ok(
                 settingService.saveSetting(name,value)
         );
