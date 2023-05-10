@@ -6,6 +6,7 @@ import com.hnzz.dto.GroupData;
 import com.hnzz.dto.GroupSearchInfo;
 import com.hnzz.entity.Group;
 import com.hnzz.entity.GroupApplicationForm;
+import com.hnzz.form.GroupOutForm;
 import com.hnzz.form.groupform.NewGroup;
 import com.hnzz.form.groupform.UpdateGroup;
 import org.springframework.data.domain.Page;
@@ -53,7 +54,7 @@ public interface GroupService {
 
     void saveGroupApplicationFrom(Group groupById, String userId);
 
-    List<GroupApplicationForm> getGroupApplicationFrom(List<String> groups);
+    List<GroupOutForm> getGroupApplicationFrom(List<String> groups);
 
     GroupApplicationForm findGroupApplicationForm(String groupId, String joinUserId);
 

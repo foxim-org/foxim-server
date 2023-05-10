@@ -8,17 +8,13 @@ import com.hnzz.dao.GroupDao;
 import com.hnzz.dto.GroupAdmin;
 import com.hnzz.dto.GroupData;
 import com.hnzz.dto.GroupSearchInfo;
-import com.hnzz.entity.FileInfo;
-import com.hnzz.entity.Group;
-import com.hnzz.entity.GroupApplicationForm;
-import com.hnzz.entity.GroupUsers;
+import com.hnzz.dto.UserDTO;
+import com.hnzz.entity.*;
+import com.hnzz.form.GroupOutForm;
 import com.hnzz.form.IdsPattern;
 import com.hnzz.form.groupform.NewGroup;
 import com.hnzz.form.groupform.UpdateGroup;
-import com.hnzz.service.BotsService;
-import com.hnzz.service.GroupService;
-import com.hnzz.service.GroupUserService;
-import com.hnzz.service.IdsService;
+import com.hnzz.service.*;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -50,6 +46,8 @@ public class GroupServiceImpl implements GroupService {
     private IdsService idsService;
     @Resource
     private GroupService groupService;
+    @Resource
+    private UserService userService;
     @Resource
     private GroupUserService groupUserService;
 
@@ -106,9 +104,7 @@ public class GroupServiceImpl implements GroupService {
                 .setTags(updateGroup.getTags()==null?groupById.getTags():updateGroup.getTags())
                 .setNotice(updateGroup.getNotice()==null?groupById.getNotice():updateGroup.getNotice());
 
-        Group group = groupDao.updateGroupDataById(groupById);
-
-        return group;
+        return groupDao.updateGroupDataById(groupById);
     }
 
     @Override
@@ -241,18 +237,26 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public List<GroupApplicationForm> getGroupApplicationFrom(List<String> groups) {
+    public List<GroupOutForm> getGroupApplicationFrom(List<String> groups) {
         List<GroupApplicationForm> groupApplicationFrom = groupDao.getGroupApplicationFrom(groups);
-        List<GroupApplicationForm> groupApplication=new ArrayList<>();
+        List<GroupOutForm> groupOutForms=new ArrayList<>();
         if (!groupApplicationFrom.isEmpty()){
-            for (int i = 0; i < groupApplicationFrom.size(); i++) {
-                if (groupApplicationFrom.get(i).getStatus().equals("PENDING")){
-                    groupApplication.add(groupApplicationFrom.get(i));
+            for (GroupApplicationForm groupApplicationForm : groupApplicationFrom) {
+                if (groupApplicationForm.getStatus().equals("PENDING")) {
+                    GroupOutForm groupOutForm = BeanUtil.copyProperties(groupApplicationForm, GroupOutForm.class);
+                    UserDTO userById = userService.findUserById(groupApplicationForm.getUserId());
+                    groupOutForm.setUsername(userById.getUsername());
+                    if (userById.getAvatarUrl()==null){
+                        groupOutForm.setAvatarUrl(userById.getMoRenUrl());
+                    }else {
+                        groupOutForm.setAvatarUrl(userById.getAvatarUrl());
+                    }
+                        groupOutForms.add(groupOutForm);
                 }
-                return groupApplication;
             }
+            return groupOutForms;
         }
-        return groupApplicationFrom;
+        return groupOutForms;
     }
 
     @Override
