@@ -20,10 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author HB on 2023/5/5
@@ -65,11 +62,11 @@ public class SettingServerImpl implements SettingService {
             case LOGIN_SETTING:
                 return setting==null ?
                     ResponseEntity.ok(new UserLoginSetting()) :
-                    ResponseEntity.ok(JSONUtil.toBean(setting.getValue() , UserLoginSetting.class));
+                    ResponseEntity.ok(JSONUtil.toBean(setting.getValue() , HashMap.class));
             case REGISTER_SETTING:
                 return setting==null ?
                         ResponseEntity.ok(new UserRegisterSetting()) :
-                        ResponseEntity.ok(JSONUtil.toBean(setting.getValue() , UserRegisterSetting.class));
+                        ResponseEntity.ok(JSONUtil.toBean(setting.getValue() , HashMap.class));
             case WITH_USER_SETTING:
                 return setting==null ?
                         ResponseEntity.ok("") :
@@ -102,50 +99,46 @@ public class SettingServerImpl implements SettingService {
         return template.find(new Query(Criteria.where("name").is("关于我们")), AboutWith.class);
     }
 
-//    @Override
-//    public ResponseEntity getSet(String name) {
-//        SettingEnum settingEnum = SettingEnum.valueOf(name);
-//        Setting setting = settingDao.getSettingByName(name);
-//        switch (settingEnum) {
-//            case LOGIN_SETTING:
-//                if (setting==null){
-//                    ResponseEntity.ok(new UserLoginSetting());
-//                }else {
-//                    UserLoginSetting userLoginSetting = JSONUtil.toBean(setting.getValue(), UserLoginSetting.class);
-//                    Map<String, Boolean> userLoginType = userLoginSetting.getUserLoginType();
-//
-//                    List<UserLoginSetting> userLoginSettingItems=new ArrayList<>();
-//                    for (int i = 0; i < userLoginType.size(); i++) {
-//                        if (userLoginType.get(i).getUsed()){
-//                            userLoginSettingItems.add(userLoginType.get(i));
-//                        }
-//                    }
-//                    return ResponseEntity.ok(userLoginSettingItems);
-//                }
-//
-//            case REGISTER_SETTING:
-//                if (setting==null){
-//                    ResponseEntity.ok(new UserRegisterSetting());
-//                }else {
-//                    UserRegisterSetting userRegisterSetting = JSONUtil.toBean(setting.getValue(), UserRegisterSetting.class);
-//
-//                    List<UserRegisterSettingItem> userRegisterType = userRegisterSetting.getUserRegisterType();
-//                    List<UserRegisterSettingItem> userRegisterSettingItems=new ArrayList<>();
-//                    for (int i = 0; i < userRegisterType.size(); i++) {
-//                        if (userRegisterType.get(i).isUsed()){
-//                            userRegisterSettingItems.add(userRegisterType.get(i));
-//                        }
-//                    }
-//                    return ResponseEntity.ok(userRegisterSettingItems);
-//                }
-//            case WITH_USER_SETTING:
-//                return setting==null ?
-//                        ResponseEntity.ok("") :
-//                        ResponseEntity.ok(setting.getValue());
-//            default:
-//                throw new AppException("不存在名为"+name+"的配置");
-//        }
-//    }
+    @Override
+    public ResponseEntity getSet(String name) {
+        SettingEnum settingEnum = SettingEnum.valueOf(name);
+        Setting setting = settingDao.getSettingByName(name);
+        switch (settingEnum) {
+            case LOGIN_SETTING:
+                if (setting==null){
+                    ResponseEntity.ok(new UserLoginSetting());
+                }else {
+                    HashMap<String,Boolean> hashMap = JSONUtil.toBean(setting.getValue(), HashMap.class);
+                    List<HashMap<String,Boolean>> userLoginSettingItems=new ArrayList<>();
+                    for (Map.Entry<String, Boolean> entry : hashMap.entrySet()) {
+                        if (entry.getValue()){
+                            userLoginSettingItems.add((HashMap<String, Boolean>) entry);
+                        }
+                    }
+                    return ResponseEntity.ok(userLoginSettingItems);
+                }
+
+            case REGISTER_SETTING:
+                if (setting==null){
+                    ResponseEntity.ok(new UserRegisterSetting());
+                }else {
+                    HashMap<String,Boolean> hashMap = JSONUtil.toBean(setting.getValue(), HashMap.class);
+                    List<HashMap<String,Boolean>> userRegisterSettingItems=new ArrayList<>();
+                    for (Map.Entry<String, Boolean> entry : hashMap.entrySet()) {
+                        if (entry.getValue()){
+                            userRegisterSettingItems.add((HashMap<String, Boolean>) entry);
+                        }
+                    }
+                    return ResponseEntity.ok(userRegisterSettingItems);
+                }
+            case WITH_USER_SETTING:
+                return setting==null ?
+                        ResponseEntity.ok("") :
+                        ResponseEntity.ok(setting.getValue());
+            default:
+                throw new AppException("不存在名为"+name+"的配置");
+        }
+    }
 
     @Override
     public void saveLogoAvatarUrl(String userId,MultipartFile file) {

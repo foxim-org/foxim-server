@@ -368,9 +368,9 @@ public class GroupController {
         return  ResultUtil.resultToResponse(Result.success(groupMessageService.getAllGroupMessageWithASC(groupId)));
     }
 
-    @GetMapping("/deleteMessages/{groupId}")
+    @PostMapping("/deleteMessages")
     @ApiOperation("清空群聊历史记录")
-    public ResponseEntity deleteMessages(@RequestHeader("userId")String userId,@PathVariable("groupId") String groupId){
+    public ResponseEntity deleteMessages(@RequestHeader("userId")String userId,@RequestParam("groupId") String groupId){
         GroupUsers groupUsers = groupUserService.getGroupUserByUserId(userId, groupId);
         if(groupUsers == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("您不是该群成员 , 无权查看该群历史记录");
@@ -379,7 +379,8 @@ public class GroupController {
         if (!userId.equals(groupById.getOwnerId())){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("您不是群主,无权清空该群历史记录");
         }
-        return  ResultUtil.resultToResponse(Result.success(groupMessageService.deleteMessages(groupId)));
+         groupMessageService.deleteMessages(groupId);
+        return  ResultUtil.resultToResponse(Result.success("删除成功"));
     }
 
     /**
