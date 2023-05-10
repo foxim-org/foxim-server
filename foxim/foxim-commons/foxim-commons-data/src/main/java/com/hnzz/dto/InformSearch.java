@@ -17,7 +17,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel("首页搜索框实体")
+@ApiModel("首页框实体")
 public class InformSearch {
     @Field
     @ApiModelProperty("用户id")

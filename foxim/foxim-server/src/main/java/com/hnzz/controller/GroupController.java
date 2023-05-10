@@ -79,7 +79,6 @@ public class GroupController {
     /**
      * 同意群申请
      *
-
      */
     @PostMapping("/agreeGroup")
     @ApiOperation("同意群申请")
