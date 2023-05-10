@@ -51,4 +51,6 @@ public interface GroupUserService {
     void updateGroupUser(GroupUsers groupUserByUserId, String displayName);
 
     Boolean isGroupUser(String groupId, String userId);
+
+    List<GroupUsers> getGroupUserByGroupIds(List<String> groupIds, String userId);
 }
