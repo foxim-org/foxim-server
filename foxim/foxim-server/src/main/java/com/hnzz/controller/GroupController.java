@@ -55,6 +55,20 @@ public class GroupController {
     private GroupMessageService groupMessageService;
 
 
+    @GetMapping("/lookGroup")
+    @ApiOperation("查看群资料")
+    public ResponseEntity lookGroup(@RequestHeader("userId") String userId,@RequestParam("groupId") String groupId) {
+        if (userId == null) {
+            return ResultUtil.response(HttpStatus.NOT_FOUND, "用户Id不存在!");
+        }
+        Group groupById = groupService.getGroupById(groupId);
+        if (groupById==null){
+            return ResultUtil.response(HttpStatus.NOT_FOUND, "该群不存在!");
+        }
+        return ResponseEntity.ok(groupById);
+    }
+
+
     @GetMapping("/groupRequests")
     @ApiOperation("查看群申请列表")
     public ResponseEntity contactsRequests(@RequestHeader("userId") String userId) {
