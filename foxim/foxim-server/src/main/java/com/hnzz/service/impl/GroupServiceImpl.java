@@ -48,7 +48,8 @@ public class GroupServiceImpl implements GroupService {
     private GroupDao groupDao;
     @Resource
     private IdsService idsService;
-
+    @Resource
+    private GroupService groupService;
     @Resource
     private GroupUserService groupUserService;
 
@@ -210,8 +211,19 @@ public class GroupServiceImpl implements GroupService {
             groupSearchInfos = BeanUtil.copyToList(groupBySearch, GroupSearchInfo.class);
             for (GroupSearchInfo info : groupSearchInfos) {
                 info.setIsGroupUser(groupUserService.isGroupUser(info.getId(),userId));
+                if (!info.getIsGroupUser()){
+                    GroupApplicationForm groupApplicationForm = groupService.findGroupApplicationForm(info.getId(), userId);
+                    if (groupApplicationForm!=null&&groupApplicationForm.getStatus().equals("PENDING")){
+                        info.setIsJoin("PENDING");
+                    }else if (groupApplicationForm==null){
+                        info.setIsJoin("INEXISTENCE");
+                    }
+                }else {
+                    info.setIsJoin("ACCEPTED");
+                }
             }
         }
+
         return groupSearchInfos;
     }
 

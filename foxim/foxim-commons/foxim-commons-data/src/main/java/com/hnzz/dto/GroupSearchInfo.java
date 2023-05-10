@@ -26,4 +26,7 @@ public class GroupSearchInfo {
 
     @ApiModelProperty("是否是该群成员")
     private Boolean isGroupUser;
+
+    @ApiModelProperty("@ApiModelProperty(申请加入群聊的状态PENDING（等待验证） | ACCEPTED（已加入群聊）| INEXISTENCE(不存在该群))")
+    private String isJoin;
 }
