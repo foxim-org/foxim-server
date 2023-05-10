@@ -1,6 +1,9 @@
 package com.hnzz.entity.system;
 
+import com.hnzz.commons.base.enums.system.UserValidTypeEnum;
 import lombok.Data;
+
+import java.util.Map;
 
 /**
  * @author HB on 2023/5/5
@@ -13,4 +16,5 @@ public class UserLoginSettingItem {
      */
     private String userLoginType;
     private Boolean used;
+
 }
