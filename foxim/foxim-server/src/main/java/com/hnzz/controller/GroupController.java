@@ -356,7 +356,7 @@ public class GroupController {
 
     @GetMapping("/viewSilent")
     @ApiOperation("查看群禁言列表")
-    public ResponseEntity viewSilent(@RequestHeader("userId")String userId,@RequestBody String groupId){
+    public ResponseEntity viewSilent(@RequestHeader("userId")String userId,@RequestParam String groupId){
 
 
         if (groupId==null){
