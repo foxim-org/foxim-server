@@ -64,7 +64,8 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     public Group saveGroup(NewGroup newGroup,String userId) {
         Group group= BeanUtil.copyProperties(newGroup,Group.class);
-        group.setOwnerId(userId);
+        group.setOwnerId(userId)
+                 .setIsSilencedToAll(false);
         List<String> usersId = new ArrayList<>();
 
         usersId.add(userId);
