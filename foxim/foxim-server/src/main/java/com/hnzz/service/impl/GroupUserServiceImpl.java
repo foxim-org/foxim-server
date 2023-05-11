@@ -81,6 +81,7 @@ public class GroupUserServiceImpl implements GroupUserService {
                         .setSilencedTo(new Date())
                         .setIsMuted(false)
                         .setIsSticky(false)
+                        .setUsername(userById.get(i).getUsername())
                         .setCreatedAt(group.getCreatedAt())
                         .setMessageTTL(newGroup.getMessageTTL())
                         .setUserId(userById.get(i).getId())
@@ -91,6 +92,7 @@ public class GroupUserServiceImpl implements GroupUserService {
                         .setAvatarUrl(userById.get(i).getAvatarUrl())
                         .setSilencedTo(new Date())
                         .setCreatedAt(group.getCreatedAt())
+                        .setUsername(userById.get(i).getUsername())
                         .setMessageTTL(newGroup.getMessageTTL())
                         .setUserId(userById.get(i).getId())
                         .setRecentAt(new Date())
@@ -281,8 +283,6 @@ public class GroupUserServiceImpl implements GroupUserService {
                 }
                 groupMembers.add(groupMember);
             }
-
-
         }
         return groupMembers;
     }
