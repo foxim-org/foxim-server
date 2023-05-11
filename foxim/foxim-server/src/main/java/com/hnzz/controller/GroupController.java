@@ -293,9 +293,9 @@ public class GroupController {
 
     @GetMapping("/silentAll")
     @ApiOperation("设置全局禁言,解除全局禁言")
-    public ResponseEntity silentAll(@RequestHeader("userId")String userId,@RequestParam GroupId groupId){
-        Group groupById = groupService.getGroupById(groupId.getGroupId());
-        GroupUsers groupUserByUserId = groupUserService.getGroupUserByUserId(userId, groupId.getGroupId());
+    public ResponseEntity silentAll(@RequestHeader("userId")String userId,@RequestParam String groupId){
+        Group groupById = groupService.getGroupById(groupId);
+        GroupUsers groupUserByUserId = groupUserService.getGroupUserByUserId(userId, groupId);
         if (!userId.equals(groupById.getOwnerId())&& !groupUserByUserId.getIsAdmin()){
             throw new AppException("您没有权限执行此操作！");
         }
