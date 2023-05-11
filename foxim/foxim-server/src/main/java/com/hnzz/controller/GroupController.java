@@ -76,6 +76,9 @@ public class GroupController {
             return ResultUtil.response(HttpStatus.NOT_FOUND, "用户Id不存在!");
         }
         List<GroupData> groupByUserId = groupService.getGroupByUserId(userId);
+        if (groupByUserId==null){
+            return ResponseEntity.ok(null);
+        }
         List<String> groupIds=new ArrayList<>();
         for (GroupData groupData : groupByUserId) {
             groupIds.add(groupData.getId());
@@ -692,6 +695,7 @@ public class GroupController {
 
         if (updateGroup.getDisplayName()!=null){
             groupUserService.updateGroupUser(groupUserById,updateGroup.getDisplayName());
+            return ResponseEntity.ok("修改成功");
         }
 
         //判断是否为管理员
