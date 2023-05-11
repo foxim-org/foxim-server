@@ -63,6 +63,17 @@ public class  AdminUserController {
         return ResponseEntity.ok(navigations);
     }
 
+    @GetMapping("lookOneNavigation")
+    @ApiOperation(("查看单个底部导航栏"))
+    public ResponseEntity<Object> lookOneNavigation(@RequestHeader("adminId")String userId,@RequestParam("id") String id){
+        AdminUser byId = adminUserService.findById(userId);
+        if (byId==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("无权访问该接口");
+        }
+        Navigation navigations=settingService.lookOneNavigation(id);
+        return ResponseEntity.ok(navigations);
+    }
+
     @PostMapping("updateNavigation")
     @ApiOperation(("修改底部导航栏"))
     public ResponseEntity<Object> updateNavigation(@RequestHeader("adminId")String userId,@RequestParam("id") String id, @RequestParam("img") MultipartFile img,
