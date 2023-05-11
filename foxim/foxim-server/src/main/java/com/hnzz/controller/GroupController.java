@@ -354,7 +354,7 @@ public class GroupController {
         return ResponseEntity.ok("操作成功");
     }
 
-    @PostMapping("/viewSilent")
+    @GetMapping("/viewSilent")
     @ApiOperation("查看群禁言列表")
     public ResponseEntity viewSilent(@RequestHeader("userId")String userId,@RequestBody String groupId){
 
