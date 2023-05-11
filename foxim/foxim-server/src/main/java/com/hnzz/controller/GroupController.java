@@ -311,9 +311,9 @@ public class GroupController {
     }
 
 
-    @PostMapping("/silent")
+    @GetMapping("/silent")
     @ApiOperation("设置禁言")
-    public ResponseEntity silent(@RequestHeader("userId")String userId,@RequestParam String groupId,@RequestParam String toId,@RequestParam Date date){
+    public ResponseEntity silent(@RequestHeader("userId")String userId,@RequestParam String groupId,@RequestParam String toId){
         Group groupById = groupService.getGroupById(groupId);
         GroupUsers groupUserByUserId = groupUserService.getGroupUserByUserId(userId, groupId);
         if (!userId.equals(groupById.getOwnerId())&& !groupUserByUserId.getIsAdmin()){
@@ -323,7 +323,6 @@ public class GroupController {
         if (groupUserByToId==null){
             throw new AppException("该用户不在群内！");
         }
-        groupUserByToId.setSilencedTo(date);
         groupUserByToId.setIsSilencedTo(true);
         groupUserService.saveGroupUser(groupUserByToId);
         return ResponseEntity.ok("操作成功");
