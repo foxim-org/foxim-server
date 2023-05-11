@@ -340,16 +340,8 @@ public class GroupController {
         if (groupUserByToId == null) {
             throw new AppException("该用户不在群内！");
         }
-        Date date = new Date();
-        if (date.after(groupUserByToId.getSilencedTo())) {
-            throw new AppException("还在禁言时间内！");
-        } else if (date.before(groupUserByToId.getSilencedTo())) {
-            groupUserByToId.setSilencedTo(null);
-            groupUserByToId.setIsSilencedTo(false);
-        }else {
-            groupUserByToId.setSilencedTo(null);
-            groupUserByToId.setIsSilencedTo(false);
-        }
+
+        groupUserByToId.setIsSilencedTo(false);
         groupUserService.saveGroupUser(groupUserByToId);
         return ResponseEntity.ok("操作成功");
     }
