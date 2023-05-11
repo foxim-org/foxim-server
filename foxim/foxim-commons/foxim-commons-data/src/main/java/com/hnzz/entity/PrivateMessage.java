@@ -30,6 +30,8 @@ public class PrivateMessage implements Comparable<PrivateMessage>{
     private String userId;
     @ApiModelProperty("消息内容")
     private String text;
+    @ApiModelProperty("消息Id")
+    private String msgId;
     @ApiModelProperty("消息生成时间")
     @JsonFormat(timezone = "Asia/Shanghai")
     private Date createdAt;
