@@ -372,15 +372,7 @@ public class GroupController {
 
         List<GroupUsers> groupUsersList = groupUserService.getGroupUserByGroupId(groupId.getGroupId());
 
-        List<GroupUsers> groupUsersListone=new ArrayList<>();
-        for (GroupUsers groupUsers : groupUsersList) {
-            Date silencedTo = groupUsers.getSilencedTo();
-            if (silencedTo.compareTo(new Date())>0){
-                groupUsersListone.add(groupUsers);
-            }
-        }
-
-        return ResultUtil.resultToResponse(Result.success(groupUsersListone));
+        return ResultUtil.resultToResponse(Result.success(groupUsersList));
     }
 
      /**
