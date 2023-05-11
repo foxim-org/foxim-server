@@ -11,10 +11,7 @@ import com.hnzz.dto.MessageList;
 import com.hnzz.dto.UserDTO;
 import com.hnzz.entity.*;
 import com.hnzz.entity.system.Setting;
-import com.hnzz.form.AddAdminForm;
-import com.hnzz.form.AdminUserLoginForm;
-import com.hnzz.form.AdminUserRegisterForm;
-import com.hnzz.form.UserAbleForm;
+import com.hnzz.form.*;
 import com.hnzz.form.groupform.GroupId;
 import com.hnzz.form.groupform.QuitGroup;
 import com.hnzz.form.userform.LoginForm;
@@ -78,6 +75,19 @@ public class  AdminUserController {
         Navigation navigations = settingService.updateNavigation(id,img,imgBright,routing,name);
         return ResponseEntity.ok(navigations);
     }
+
+    @PostMapping("deleteNavigation")
+    @ApiOperation(("删除底部导航栏"))
+    public ResponseEntity<Object> deleteNavigation(@RequestHeader("adminId")String userId, @RequestBody NavigationFrom Ids){
+        AdminUser byId = adminUserService.findById(userId);
+        if (byId==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("无权访问该接口");
+        }
+         settingService.deleteNavigation(Ids.getIds());
+        return ResponseEntity.ok("删除成功");
+    }
+
+
 
     @PostMapping("setNavigation")
     @ApiOperation(("增加底部导航栏"))
