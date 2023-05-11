@@ -356,20 +356,20 @@ public class GroupController {
 
     @PostMapping("/viewSilent")
     @ApiOperation("查看群禁言列表")
-    public ResponseEntity viewSilent(@RequestHeader("userId")String userId,@RequestBody GroupId groupId){
+    public ResponseEntity viewSilent(@RequestHeader("userId")String userId,@RequestBody String groupId){
 
 
         if (groupId==null){
             return ResultUtil.response(HttpStatus.BAD_REQUEST,"传入群聊Id不能为空");
         }
 
-        GroupUsers groupUserByUserId = groupUserService.getGroupUserByUserId(userId, groupId.getGroupId());
+        GroupUsers groupUserByUserId = groupUserService.getGroupUserByUserId(userId, groupId);
 
         if (!groupUserByUserId.getIsAdmin()){
             return ResultUtil.response(HttpStatus.INTERNAL_SERVER_ERROR,"该用户没有该权限");
         }
 
-        List<GroupUsers> groupUsersList = groupUserService.getGroupUserByGroupId(groupId.getGroupId());
+        List<GroupUsers> groupUsersList = groupUserService.getGroupUserByGroupId(groupId);
 
         return ResultUtil.resultToResponse(Result.success(groupUsersList));
     }
