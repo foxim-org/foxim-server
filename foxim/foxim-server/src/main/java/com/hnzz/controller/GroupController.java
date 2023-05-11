@@ -371,7 +371,14 @@ public class GroupController {
 
         List<GroupUsers> groupUsersList = groupUserService.getGroupUserByGroupId(groupId);
 
-        return ResultUtil.resultToResponse(Result.success(groupUsersList));
+        List<GroupUsers> groupUsersLists = new ArrayList<>();
+
+        for (GroupUsers g:groupUsersList) {
+            if (!g.getIsAdmin()){
+                groupUsersLists.add(g);
+            }
+        }
+        return ResultUtil.resultToResponse(Result.success(groupUsersLists));
     }
 
      /**
