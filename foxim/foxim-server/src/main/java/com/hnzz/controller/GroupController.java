@@ -291,7 +291,7 @@ public class GroupController {
         }
     }
 
-    @PostMapping("/silentAll")
+    @GetMapping("/silentAll")
     @ApiOperation("设置全局禁言,解除全局禁言")
     public ResponseEntity silentAll(@RequestHeader("userId")String userId,@RequestParam GroupId groupId){
         Group groupById = groupService.getGroupById(groupId.getGroupId());
