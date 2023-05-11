@@ -328,7 +328,7 @@ public class GroupController {
         return ResponseEntity.ok("操作成功");
     }
 
-    @PostMapping("/notSilent")
+    @GetMapping("/notSilent")
     @ApiOperation("解除禁言")
     public ResponseEntity notSilent(@RequestHeader("userId")String userId,@RequestParam String groupId,@RequestParam String toId) {
         Group groupById = groupService.getGroupById(groupId);
