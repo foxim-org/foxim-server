@@ -40,4 +40,6 @@ public interface SettingService {
     Navigation updateNavigation(String id,MultipartFile img, MultipartFile imgBright, String routing, String name);
 
     void deleteNavigation(List<String> ids);
+
+    Navigation lookOneNavigation(String id);
 }

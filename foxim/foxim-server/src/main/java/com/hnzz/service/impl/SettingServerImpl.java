@@ -268,4 +268,9 @@ public class SettingServerImpl implements SettingService {
     public void deleteNavigation(List<String> ids) {
         template.findAllAndRemove(new Query(Criteria.where("id").in(ids)), Navigation.class);
     }
+
+    @Override
+    public Navigation lookOneNavigation(String id) {
+        return template.findOne(new Query(Criteria.where("id").is(id)), Navigation.class);
+    }
 }
