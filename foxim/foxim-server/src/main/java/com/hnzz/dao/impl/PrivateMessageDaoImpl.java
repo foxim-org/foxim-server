@@ -96,6 +96,6 @@ public class PrivateMessageDaoImpl implements PrivateMessageDao {
     public void emptyPrivateMessages(String userId, String contactId) {
         Query query = new Query();
         query.addCriteria(Criteria.where("userId").in(userId, contactId).and("contactId").in(userId, contactId));
-         mongoTemplate.remove(query,PrivateMessage.class);
+        mongoTemplate.findAllAndRemove(query,PrivateMessage.class);
     }
 }

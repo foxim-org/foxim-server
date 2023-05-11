@@ -37,7 +37,7 @@ public class PrivateMessageController {
     }
 
     @ApiOperation("清空聊天历史记录")
-    @PostMapping("/emptyPrivateMessages")
+    @GetMapping("/emptyPrivateMessages")
     public ResponseEntity<Object> emptyPrivateMessages(@RequestHeader("userId")String userId, @RequestParam String contactId){
         privateMessageService.emptyPrivateMessages(userId,contactId);
         return ResponseEntity.ok("清除历史记录成功!");

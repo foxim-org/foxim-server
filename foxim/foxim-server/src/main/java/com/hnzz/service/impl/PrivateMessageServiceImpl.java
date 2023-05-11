@@ -101,6 +101,6 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
         if (contacts==null){
             throw new AppException("您的这位好友不存在");
         }
-     privateMessageDao.emptyPrivateMessages(userId,contactId);
+        privateMessageDao.emptyPrivateMessages(userId,contactId);
     }
 }
