@@ -3,7 +3,6 @@ package com.hnzz.controller;
 import cn.hutool.core.bean.BeanUtil;
 import com.hnzz.common.ResultUtil;
 import com.hnzz.commons.base.enums.AdminRoleEnum;
-import com.hnzz.commons.base.enums.system.SettingEnum;
 import com.hnzz.commons.base.exception.AppException;
 import com.hnzz.dto.ContactsPage;
 import com.hnzz.dto.GroupUserAdmin;
@@ -94,7 +93,7 @@ public class  AdminUserController {
         if (byId==null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("无权访问该接口");
         }
-         settingService.deleteNavigation(Ids.getIds());
+        settingService.deleteNavigation(Ids.getIds());
         return ResponseEntity.ok("删除成功");
     }
 
@@ -421,8 +420,8 @@ public class  AdminUserController {
         List<User> userList=userService.findUserByInviteLink(byId.getId());
 
         List<String> ownerIds=new ArrayList<>();
-          for (int i = 0; i < userList.size(); i++) {
-            ownerIds.add(userList.get(i).getId());
+        for (User user : userList) {
+            ownerIds.add(user.getId());
         }
 
         List<Group> groups = groupService.getGroupByUserList(ownerIds);
@@ -431,8 +430,6 @@ public class  AdminUserController {
     }
     /**
      * 通讯录列表
-     *
-     * @return
      */
     @GetMapping("/addressList")
     @ApiOperation("通讯录列表")

@@ -1,13 +1,11 @@
 package com.hnzz.controller;
 
-import com.hnzz.entity.User;
+
 import com.hnzz.service.SmsService;
 import com.hnzz.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,10 +27,8 @@ import javax.annotation.Resource;
 @Api(tags = "短信接口")
 public class SmsController {
 
-    @Autowired
-    private SmsService smsService;
     @Resource
-    private UserService userService;
+    private SmsService smsService;
 
     @PostMapping("/codes")
     @ApiOperation("发送验证码")

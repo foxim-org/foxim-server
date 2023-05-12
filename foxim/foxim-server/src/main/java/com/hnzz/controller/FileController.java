@@ -1,18 +1,14 @@
 package com.hnzz.controller;
 
 
-import cn.hutool.json.ObjectMapper;
-import com.alibaba.nacos.shaded.com.google.gson.Gson;
-import com.hnzz.common.ResultUtil;
+
 import com.hnzz.common.SeaweedFSUtil;
 import com.hnzz.commons.base.exception.AppException;
-import com.hnzz.entity.AdminUser;
 import com.hnzz.entity.FileInfo;
 import com.hnzz.service.FileInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -56,12 +52,6 @@ public class FileController {
         if (file.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("上传文件不能为空!");
         }
-        /*if (!file.getContentType().equals("image/jpeg")||file.getContentType().equals("image/jpg")){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("只能上传jpeg或jpg的图片格式!");
-        }*/
-        /*if (file.getSize()>10*1024*1024){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("文件大小不能超过10MB!");
-        }*/
         ResponseEntity<FileInfo> response = seaweedFSUtil.uploadFile(file);
         FileInfo fileInfo = response.getBody();
         if (fileInfo==null){
