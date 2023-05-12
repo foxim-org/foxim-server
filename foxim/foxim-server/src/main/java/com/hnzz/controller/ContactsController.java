@@ -1,6 +1,5 @@
 package com.hnzz.controller;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.hnzz.common.ResultUtil;
 import com.hnzz.commons.base.enums.activity.ActivitiesField;
 import com.hnzz.commons.base.enums.userenums.ContactStatus;
@@ -28,7 +27,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @PackageName:com.zzkj.controller
@@ -67,8 +65,6 @@ public class ContactsController {
 
     /**
      * 删除好友
-     *
-     * @param id
      */
     @PostMapping("/remove/{id}")
     @ApiOperation("删除好友")
@@ -84,8 +80,6 @@ public class ContactsController {
 
     /**
      * 查询好友列表
-     *
-     * @return
      */
     @GetMapping("/findMyFriends")
     @ApiOperation("查询好友列表")
@@ -116,9 +110,6 @@ public class ContactsController {
 
     /**
      * 拉黑好友
-     *
-     * @param
-     * @param
      */
     @PostMapping("/block")
     @ApiOperation("拉黑好友")
@@ -144,32 +135,8 @@ public class ContactsController {
         return ResponseEntity.ok("拉黑成功!");
     }
 
-//    /**
-//     * 新增好友
-//     *
-//     * @param
-//     * @return
-//     */
-//    @PostMapping("/addSave")
-//    @ApiOperation("新增好友")
-//
-//    public ResponseEntity<String> addSave(@RequestBody ContactsForm contactId, @RequestHeader("userId") String userId) {
-//
-//        // 判断a和b是否存在好友关系
-//        Contacts andB = contactsService.selectByUserId(userId, contactId.getContactId());
-//        if (andB != null) {
-//            return ResultUtil.response(HttpStatus.NOT_FOUND, "该用户与你是好友关系!");
-//        }
-//        contactsService.addSave(userId, contactId.getContactId());
-//        contactsService.addSave(contactId.getContactId(), userId);
-//        return ResponseEntity.ok("添加成功!");
-//    }
-
     /**
      * 修改联系人关系
-     *
-     * @param
-     * @param
      */
     @PostMapping("/setContact")
     @ApiOperation("修改联系人关系")
@@ -211,9 +178,6 @@ public class ContactsController {
 
     /**
      * 发送添加好友申请
-     *
-     * @param
-     * @return
      */
     @GetMapping("/addContacts/{friendId}")
     @ApiOperation("发送添加好友申请")
@@ -248,8 +212,6 @@ public class ContactsController {
 
     /**
      * 好友申请列表
-     * @param userId
-     * @return
      */
     @GetMapping("/contactsRequests")
     @ApiOperation("好友申请列表")
@@ -264,9 +226,6 @@ public class ContactsController {
 
     /**
      * 同意好友申请
-     *
-     * @param
-     * @return
      */
     @GetMapping("/agreeContacts/{friendId}")
     @ApiOperation("同意好友申请")
@@ -283,9 +242,6 @@ public class ContactsController {
 
     /**
      * 删除好友申请
-     *
-     * @param
-     * @return
      */
     @PostMapping("/deleteContacts")
     @ApiOperation("删除好友申请")

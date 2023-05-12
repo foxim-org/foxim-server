@@ -108,7 +108,6 @@ public class GroupController {
 
     /**
      * 同意群申请
-     *
      */
     @GetMapping("/agreeGroup")
     @ApiOperation("同意群申请")
@@ -144,7 +143,6 @@ public class GroupController {
 
     /**
      * 发送添加群申请
-     *
      */
     @GetMapping("/addGroup/{groupId}")
     @ApiOperation("发送添加群申请")

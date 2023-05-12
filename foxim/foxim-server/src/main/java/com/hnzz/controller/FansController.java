@@ -5,11 +5,11 @@ import com.hnzz.service.FavsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -23,17 +23,13 @@ import java.util.List;
 @RequestMapping("/api/v1/favs")
 @Slf4j
 @Api(tags = "收藏内容接口")
-public class FavsController {
+public class FansController {
 
-    @Autowired
+    @Resource
     private FavsService favsService;
 
     /**
      * 收藏信息
-     *
-     * @param userId
-     * @param favs
-     * @return
      */
     @PostMapping("addCollect")
     @ApiOperation("收藏信息")
@@ -47,9 +43,6 @@ public class FavsController {
 
     /**
      * 查询所有收藏信息
-     *
-     * @param userId
-     * @return
      */
     @GetMapping("getCollect")
     @ApiOperation("查询所有收藏信息")
@@ -63,8 +56,6 @@ public class FavsController {
 
     /**
      * 删除收藏信息
-     *
-     * @param id
      */
     @PostMapping("/putCollect/{id}")
     @ApiOperation("删除收藏信息")

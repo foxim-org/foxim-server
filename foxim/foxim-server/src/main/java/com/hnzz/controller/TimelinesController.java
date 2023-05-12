@@ -24,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -44,12 +45,10 @@ public class TimelinesController {
     @Value("${app.uploadUrl}")
     private String uploadUrl;
 
-    @Autowired
+    @Resource
     private UserService userService;
-    @Autowired
+    @Resource
     private ContactsService contactsService;
-    @Autowired
-    private FileInfoService fileInfoService;
 
     @GetMapping("/{friendsId}")
     @ApiOperation("查看某人的朋友圈")
@@ -106,19 +105,19 @@ public class TimelinesController {
         List<TimelineDto> timelineDtos =new ArrayList<>();
 
 
-        for (int i = 0; i < timelinelist.size(); i++) {
-            for (int j = 0; j < usersById.size(); j++) {
-                if (timelinelist.get(i).getUserId().equals(usersById.get(j).getId())){
-                    TimelineDto timelineDto=new TimelineDto();
-                    timelineDto.setUserId(usersById.get(j).getId())
-                            .setUsername(usersById.get(j).getUsername())
-                            .setAvatarUrl(usersById.get(j).getAvatarUrl())
-                            .setText(timelinelist.get(i).getText())
-                            .setCreatedAt(timelinelist.get(i).getCreatedAt())
-                            .setReplies(timelinelist.get(i).getReplies())
-                            .setImageUrls(timelinelist.get(i).getImageUrls())
-                            .setId(timelinelist.get(i).getId())
-                            .setVideoUrls(timelinelist.get(i).getVideoUrls());
+        for (Timeline timeline : timelinelist) {
+            for (UserDTO userDTO : usersById) {
+                if (timeline.getUserId().equals(userDTO.getId())) {
+                    TimelineDto timelineDto = new TimelineDto();
+                    timelineDto.setUserId(userDTO.getId())
+                            .setUsername(userDTO.getUsername())
+                            .setAvatarUrl(userDTO.getAvatarUrl())
+                            .setText(timeline.getText())
+                            .setCreatedAt(timeline.getCreatedAt())
+                            .setReplies(timeline.getReplies())
+                            .setImageUrls(timeline.getImageUrls())
+                            .setId(timeline.getId())
+                            .setVideoUrls(timeline.getVideoUrls());
                     timelineDtos.add(timelineDto);
                 }
             }

@@ -1,11 +1,9 @@
 package com.hnzz.config;
 
 
-import com.hnzz.entity.bot.Bots;
 import com.hnzz.entity.PrivateMessage;
 import com.hnzz.entity.User;
 import com.hnzz.entity.system.Setting;
-import com.mongodb.client.*;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
@@ -23,7 +21,7 @@ import org.springframework.data.mongodb.core.index.Index;
 public class MongodbConfig {
     final MongoTemplate mongoTemplate;
 
-    public MongodbConfig(MongoTemplate mongoTemplate, MongoClient mongoClient) {
+    public MongodbConfig(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
     @EventListener(ApplicationReadyEvent.class)

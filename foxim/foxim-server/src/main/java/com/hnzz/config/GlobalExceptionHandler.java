@@ -1,8 +1,6 @@
 package com.hnzz.config;
 
-import com.hnzz.common.ResultUtil;
 import com.hnzz.commons.base.exception.AppException;
-import com.hnzz.commons.base.result.Result;
 import com.hnzz.commons.base.util.GetBindingResult;
 import com.hnzz.entity.AccessRecords;
 import lombok.extern.slf4j.Slf4j;

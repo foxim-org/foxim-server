@@ -11,7 +11,6 @@ import com.hnzz.commons.base.exception.AppException;
 import com.hnzz.commons.base.jwt.JWTHelper;
 import com.hnzz.commons.base.result.Result;
 import com.hnzz.dto.*;
-import com.hnzz.entity.AdminUser;
 import com.hnzz.entity.Contacts;
 import com.hnzz.entity.User;
 import com.hnzz.entity.system.UserRegisterSetting;
@@ -29,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -209,9 +207,6 @@ public class UserController  {
 
     /**
      * 加好友后查看资料
-     *
-     * @param id
-     * @return
      */
     @GetMapping("/full/{id}")
     @ApiOperation("加好友后查看资料")
@@ -226,8 +221,6 @@ public class UserController  {
 
     /**
      * 好友前查看资料
-     * @param id
-     * @return
      */
     @GetMapping("/simple/{id}")
     @ApiOperation("好友前查看资料")
@@ -279,8 +272,6 @@ public class UserController  {
 
     /**
      * 首页搜索框查询好友
-     *
-     * @return
      */
     @GetMapping("/userList")
     @ApiOperation("首页搜索框")
@@ -295,19 +286,19 @@ public class UserController  {
         }
         List<InformSearch> informSearches = new ArrayList<>();
         List<ContactsSearch> contactsSearch = contactsService.contactsList(search);
-        for (int i = 0; i < contactsSearch.size(); i++) {
+        for (ContactsSearch value : contactsSearch) {
             InformSearch informSearch = new InformSearch();
-            informSearch.setUserId(contactsSearch.get(i).getId());
-            informSearch.setAvatarUrl(contactsSearch.get(i).getAvatarUrl());
-            informSearch.setUserName(contactsSearch.get(i).getUsername());
+            informSearch.setUserId(value.getId());
+            informSearch.setAvatarUrl(value.getAvatarUrl());
+            informSearch.setUserName(value.getUsername());
             informSearches.add(informSearch);
         }
         List<GroupData> groupSearches = groupService.groupList(search);
-        for (int i = 0; i < groupSearches.size(); i++) {
+        for (GroupData groupSearch : groupSearches) {
             InformSearch informSearch = new InformSearch();
-            informSearch.setGroupId(groupSearches.get(i).getId());
-            informSearch.setGroupHead(groupSearches.get(i).getGroupHead());
-            informSearch.setGroupName(groupSearches.get(i).getName());
+            informSearch.setGroupId(groupSearch.getId());
+            informSearch.setGroupHead(groupSearch.getGroupHead());
+            informSearch.setGroupName(groupSearch.getName());
             informSearches.add(informSearch);
         }
         return ResponseEntity.ok(informSearches);
@@ -315,8 +306,6 @@ public class UserController  {
 
     /**
      * 注销用户
-     *
-     * @param id
      */
     @PostMapping("/userLogout/{id}")
     @ApiOperation("注销用户")
