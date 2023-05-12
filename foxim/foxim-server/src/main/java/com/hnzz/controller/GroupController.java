@@ -54,7 +54,6 @@ public class GroupController {
     @Resource
     private GroupMessageService groupMessageService;
 
-
     @GetMapping("/lookGroup")
     @ApiOperation("查看群资料")
     public ResponseEntity lookGroup(@RequestHeader("userId") String userId,@RequestParam("groupId") String groupId) {
@@ -66,6 +65,20 @@ public class GroupController {
             return ResultUtil.response(HttpStatus.NOT_FOUND, "该群不存在!");
         }
         return ResponseEntity.ok(groupById);
+    }
+
+
+    @GetMapping("/lookGroupUserSilent")
+    @ApiOperation("查看单个用户是否被禁言")
+    public ResponseEntity lookGroupUserSilent(@RequestHeader("userId") String userId,@RequestParam("groupId") String groupId,@RequestParam("SilentUserId")String SilentUserId) {
+        if (userId == null) {
+            return ResultUtil.response(HttpStatus.NOT_FOUND, "用户Id不存在!");
+        }
+        GroupUsers groupUserByUserId = groupUserService.getGroupUserByUserId(SilentUserId, groupId);
+        if (groupUserByUserId==null){
+            return ResultUtil.response(HttpStatus.NOT_FOUND, "该群成员不存在!");
+        }
+        return ResponseEntity.ok(groupUserByUserId);
     }
 
 
