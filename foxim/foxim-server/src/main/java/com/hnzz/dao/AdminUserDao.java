@@ -49,4 +49,6 @@ public interface AdminUserDao {
     User setUserAble(UserAbleForm form);
 
     AdminUser findAdminById(String adminId);
+
+    User setUserAutoAdd(UserAbleForm form);
 }

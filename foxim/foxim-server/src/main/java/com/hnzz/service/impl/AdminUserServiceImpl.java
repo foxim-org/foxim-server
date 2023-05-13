@@ -151,4 +151,10 @@ public class AdminUserServiceImpl implements AdminUserService {
         User user = adminUserDao.setUserAble(form);
         return BeanUtil.copyProperties(user, UserDTO.class);
     }
+
+    @Override
+    public UserDTO setUserAutoAdd(UserAbleForm form) {
+        User user = adminUserDao.setUserAutoAdd(form);
+        return BeanUtil.copyProperties(user, UserDTO.class);
+    }
 }

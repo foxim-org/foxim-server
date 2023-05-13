@@ -49,4 +49,6 @@ public interface AdminUserService {
     AdminUser addAdmin(AdminUser adminUser);
 
     UserDTO setUserAble(UserAbleForm form);
+
+    UserDTO setUserAutoAdd(UserAbleForm form);
 }
