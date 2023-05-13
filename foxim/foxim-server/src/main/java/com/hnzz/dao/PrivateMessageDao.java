@@ -1,5 +1,6 @@
 package com.hnzz.dao;
 
+import com.hnzz.entity.Message;
 import com.hnzz.entity.PrivateMessage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ public interface PrivateMessageDao {
     List<PrivateMessage> getAllPrivateMessageWithASC(String conversationId);
 
     List<PrivateMessage> getAllPrivateMessageWithASC(String userId, String contactId, Date delTime);
+
     List<PrivateMessage> getAllPrivateMessageWithASC(String userId, String contactId);
 
     Page<PrivateMessage> getAllPrivateMessageWithASC(String userId, String contactId, Date delTime , Pageable pageable);
@@ -30,4 +32,8 @@ public interface PrivateMessageDao {
     List<PrivateMessage> getLastPrivateMessage(String userId,List<String> contactIds);
 
     void emptyPrivateMessages(String userId, String contactId);
+
+    List<Message> getMessageByMsgId(List<String> messageId);
+
+    void savePrivateMessage(PrivateMessage privateMessages);
 }

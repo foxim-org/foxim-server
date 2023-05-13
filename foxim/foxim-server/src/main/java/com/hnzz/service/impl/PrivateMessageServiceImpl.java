@@ -8,6 +8,7 @@ import com.hnzz.dao.PrivateMessageDao;
 import com.hnzz.dto.PrivateMessageDTO;
 import com.hnzz.dto.UserDTO;
 import com.hnzz.entity.Contacts;
+import com.hnzz.entity.Message;
 import com.hnzz.entity.PrivateMessage;
 import com.hnzz.service.PrivateMessageService;
 import com.hnzz.service.UserService;
@@ -45,8 +46,33 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
         List<PrivateMessageDTO> privateMessageDTOS = new ArrayList<>();
         List<PrivateMessageDTO> privateMessageDTOSa = new ArrayList<>();
         List<PrivateMessage> message = privateMessageDao.getAllPrivateMessageWithASC(userId, contactId, contacts.getDelTime());
+        List<String> messageId=new ArrayList<>();
+        List<PrivateMessage> privateMessages=new ArrayList<>();
+        for (PrivateMessage p:message) {
+            if (p.getMsgId()!=null){
+                messageId.add(p.getMsgId());
+            }
+        }
+        List<Message> messages = privateMessageDao.getMessageByMsgId(messageId);
+
+        for (Message m:messages) {
+            if (m.getMsgStatus()!=null&&m.getMsgStatus().equals("1")){
+                for (PrivateMessage privateMessage : message) {
+                    if (m.getMsgId().equals(privateMessage.getMsgId())&&privateMessage.getMsgStatus()==0) {
+                        privateMessage.setMsgStatus(1);
+                        privateMessages.add(privateMessage);
+                    }
+                }
+            }
+        }
+        for (PrivateMessage p: privateMessages) {
+            privateMessageDao.savePrivateMessage(p);
+        }
+
+        List<PrivateMessage> newMessage = privateMessageDao.getAllPrivateMessageWithASC(userId, contactId, contacts.getDelTime());
+
         List<UserDTO> users = userService.getUsersById(Arrays.asList(userId, contactId));
-        message.forEach(m->{
+        newMessage.forEach(m->{
             UserDTO user = users.stream().filter(f -> f.getId().equals(m.getUserId())).findFirst().orElse(null);
             if (user!=null){
                 PrivateMessageDTO pr = BeanUtil.copyProperties(m, PrivateMessageDTO.class);
@@ -79,19 +105,7 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
         Pageable pageable = PageRequest.of(pageNum, pageSize);
 
         return privateMessageDao.getAllPrivateMessageWithASC(userId, contactId, contacts.getDelTime(), pageable);
-        /*List<UserDTO> users = userService.getUsersById(Arrays.asList(userId, contactId));
-        privateMessages.forEach(m->{
-            UserDTO user = users.stream().filter(f -> f.getId().equals(m.getUserId())).findFirst().orElse(null);
-            if (user!=null){
-                PrivateMessageDTO pr = BeanUtil.copyProperties(m, PrivateMessageDTO.class);
-                pr.setAvatarUrl(user.getAvatarUrl());
-                pr.setAudio(m.getAudio());
-                pr.setAudioTime(m.getAudioTime());
-                pr.setPlaying(m.isPlaying());
-                pr.setWidth(m.getWidth());
-                privateMessageDTOS.add(pr);
-            }
-        });*/
+
 
     }
 

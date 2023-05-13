@@ -1,6 +1,7 @@
 package com.hnzz.dao.impl;
 
 import com.hnzz.dao.PrivateMessageDao;
+import com.hnzz.entity.Message;
 import com.hnzz.entity.PrivateMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -97,5 +98,15 @@ public class PrivateMessageDaoImpl implements PrivateMessageDao {
         Query query = new Query();
         query.addCriteria(Criteria.where("userId").in(userId, contactId).and("contactId").in(userId, contactId));
         mongoTemplate.findAllAndRemove(query,PrivateMessage.class);
+    }
+
+    @Override
+    public List<Message> getMessageByMsgId(List<String> messageId) {
+        return mongoTemplate.find(new Query(Criteria.where("msgId").in(messageId)),Message.class);
+    }
+
+    @Override
+    public void savePrivateMessage(PrivateMessage privateMessages) {
+        mongoTemplate.save(privateMessages);
     }
 }
