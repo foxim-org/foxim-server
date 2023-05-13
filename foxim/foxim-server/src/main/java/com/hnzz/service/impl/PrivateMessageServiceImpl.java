@@ -56,7 +56,7 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
         List<Message> messages = privateMessageDao.getMessageByMsgId(messageId);
 
         for (Message m:messages) {
-            if (m.getMsgStatus()!=null&&m.getMsgStatus().equals("1")){
+            if (m.getMsgStatus()!=null){
                 for (PrivateMessage privateMessage : message) {
                     if (m.getMsgId().equals(privateMessage.getMsgId())&&privateMessage.getMsgStatus()==0) {
                         privateMessage.setMsgStatus(1);
