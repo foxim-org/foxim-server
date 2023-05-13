@@ -13,6 +13,6 @@ import lombok.Data;
 public class UserAbleForm {
     @ApiModelProperty("用户id")
     private String userId;
-    @ApiModelProperty("是否禁止使用")
-    private boolean isDisabled;
+    @ApiModelProperty("是否自动添加")
+    private boolean autoAdd;
 }

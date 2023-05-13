@@ -64,11 +64,7 @@ public class  AdminUserController {
 
     @GetMapping("lookOneNavigation")
     @ApiOperation(("查看单个底部导航栏"))
-    public ResponseEntity<Object> lookOneNavigation(@RequestHeader("adminId")String userId,@RequestParam("id") String id){
-        AdminUser byId = adminUserService.findById(userId);
-        if (byId==null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("无权访问该接口");
-        }
+    public ResponseEntity<Object> lookOneNavigation(@RequestParam("id") String id){
         Navigation navigations=settingService.lookOneNavigation(id);
         return ResponseEntity.ok(navigations);
     }
@@ -272,17 +268,13 @@ public class  AdminUserController {
     @GetMapping("/messageList")
     @ApiOperation("分页查询所有聊天记录")
     public ResponseEntity<Object> getMessageList(
-            @ApiParam(value = "用户ID(携带token自动填入 , 不用管)") @RequestHeader("adminId") String userId,
             @ApiParam(value = "页码,必填") @RequestParam("pageNum") Integer pageNum,
             @ApiParam(value = "每页展示数量,必填") @RequestParam(value = "pageSize")Integer pageSize,
             @ApiParam(value = "起始日期") @RequestParam(value = "start", required = false) LocalDate start,
             @ApiParam(value = "截止日期") @RequestParam(value = "end", required = false) LocalDate end,
             @ApiParam(value = "消息类型 private|group 私聊和群聊") @RequestParam(value = "type") String type,
             @ApiParam(value = "搜索用户名或昵称") @RequestParam(value = "search",required = false)String search){
-        AdminUser byId = adminUserService.findById(userId);
-        if (byId==null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("无权访问该接口");
-        }
+
         if (pageNum<=0 || pageSize<=0){
             throw new AppException("查询页数必须大于零");
         }
@@ -295,14 +287,10 @@ public class  AdminUserController {
 
     @GetMapping("/GroupList")
     @ApiOperation("查询所有群聊")
-    public ResponseEntity<Object> getGroupList(@RequestHeader("adminId")String adminId,
-                                               @RequestParam("pageNum") Integer pageNum,
+    public ResponseEntity<Object> getGroupList(@RequestParam("pageNum") Integer pageNum,
                                                @RequestParam(value = "pageSize")Integer pageSize,
                                        @RequestParam(value = "search",required = false)String search){
-        AdminUser byId = adminUserService.findById(adminId);
-        if (byId==null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("无权访问该接口");
-        }
+
         if (pageNum<=0 || pageSize<=0){
             throw new AppException("查询页数必须大于零");
         }
@@ -311,14 +299,10 @@ public class  AdminUserController {
 
     @GetMapping("listUser")
     @ApiOperation("分页获取所有用户, search可以不填,如果第一次使用search , 需要num=0")
-    public ResponseEntity<Object> getUserList(@RequestHeader("adminId") String adminId,
-                                              @RequestParam("pageNum")Integer pageNum,
+    public ResponseEntity<Object> getUserList(@RequestParam("pageNum")Integer pageNum,
                                               @RequestParam(value = "pageSize")Integer pageSize,
                                               @RequestParam(value = "search",required = false)String search){
-        AdminUser adminUser = adminUserService.findById(adminId);
-        if (adminUser==null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("无权访问该接口");
-        }
+
         if (pageNum<=0 || pageSize<=0){
             throw new AppException("查询页数必须大于零");
         }
@@ -344,6 +328,17 @@ public class  AdminUserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("无权访问该接口");
         }
         UserDTO userDTO = adminUserService.setUserAble(form);
+        return ResponseEntity.ok(userDTO);
+    }
+
+    @PostMapping("setUserAutoAdd")
+    @ApiOperation("设置用户是否自动添加")
+    public ResponseEntity<Object> setUserAutoAdd(@RequestHeader("adminId") String adminId,@RequestBody UserAbleForm form){
+        AdminUser byId = adminUserService.findById(adminId);
+        if (byId==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("无权访问该接口");
+        }
+        UserDTO userDTO = adminUserService.setUserAutoAdd(form);
         return ResponseEntity.ok(userDTO);
     }
 

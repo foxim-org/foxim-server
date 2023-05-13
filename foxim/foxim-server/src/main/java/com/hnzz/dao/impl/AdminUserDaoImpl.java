@@ -69,6 +69,16 @@ public class AdminUserDaoImpl implements AdminUserDao {
     public AdminUser findAdminById(String adminId){
         return mongoTemplate.findById(adminId, AdminUser.class);
     }
+
+    @Override
+    public User setUserAutoAdd(UserAbleForm form) {
+        User id = mongoTemplate.findOne(new Query(Criteria.where("id").is(form.getUserId())), User.class);
+        assert id != null;
+        assert id.getAutoAdd()!= null;
+        id.setAutoAdd(true);
+        return mongoTemplate.save(id);
+    }
+
     @Override
     public AdminUser findAdminByMobile(String mobile){
         return mongoTemplate.findOne(new Query(Criteria.where("mobile").is(mobile)), AdminUser.class);
@@ -143,10 +153,11 @@ public class AdminUserDaoImpl implements AdminUserDao {
 
     @Override
     public User setUserAble(UserAbleForm form) {
-        Update update = new Update().set("isDisabled",form.isDisabled());
-        FindAndModifyOptions options = new FindAndModifyOptions().returnNew(true);
-        return mongoTemplate.findAndModify(new Query(Criteria.where("id").is(form.getUserId())), update, options, User.class);
+        User id = mongoTemplate.findOne(new Query(Criteria.where("id").is(form.getUserId())), User.class);
+        assert id != null;
+        assert id.getIsDisabled()!= null;
+        id.setIsDisabled(true);
+        return mongoTemplate.save(id);
     }
-
 
 }
