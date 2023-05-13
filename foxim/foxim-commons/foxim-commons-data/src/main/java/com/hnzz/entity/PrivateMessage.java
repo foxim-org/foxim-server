@@ -35,6 +35,8 @@ public class PrivateMessage implements Comparable<PrivateMessage>{
     @ApiModelProperty("消息生成时间")
     @JsonFormat(timezone = "Asia/Shanghai")
     private Date createdAt;
+    @ApiModelProperty("聊天消息状态")
+    private Integer msgStatus;
     @ApiModelProperty("消息接收者Id")
     private String contactId;
     @ApiModelProperty("语音图标")

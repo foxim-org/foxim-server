@@ -34,6 +34,8 @@ public class PrivateMessageDTO {
     private String userId;
     @ApiModelProperty("消息内容")
     private String text;
+    @ApiModelProperty("聊天消息状态")
+    private Integer msgStatus;
     @ApiModelProperty("消息生成时间")
     @JsonFormat(timezone = "Asia/Shanghai")
     private Date createdAt;
