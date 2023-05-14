@@ -33,11 +33,11 @@ public interface SettingService {
 
     Setting lookUserAvatarUrl();
 
-    void saveNavigation(MultipartFile img, MultipartFile imgBright, String routing, String name);
+    void saveNavigation(Navigation navigation);
 
     List<Navigation> lookNavigation();
 
-    Navigation updateNavigation(String id,MultipartFile img, MultipartFile imgBright, String routing, String name);
+    Navigation updateNavigation(Navigation navigation);
 
     void deleteNavigation(List<String> ids);
 

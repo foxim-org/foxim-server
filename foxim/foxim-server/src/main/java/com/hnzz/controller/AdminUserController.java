@@ -1,6 +1,7 @@
 package com.hnzz.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.hnzz.common.ResultUtil;
 import com.hnzz.commons.base.enums.AdminRoleEnum;
 import com.hnzz.commons.base.exception.AppException;
@@ -71,14 +72,12 @@ public class  AdminUserController {
 
     @PostMapping("updateNavigation")
     @ApiOperation(("修改底部导航栏"))
-    public ResponseEntity<Object> updateNavigation(@RequestHeader("adminId")String userId,@RequestParam("id") String id, @RequestParam("img") MultipartFile img,
-                                                @RequestParam("imgBright") MultipartFile imgBright,@RequestParam("routing") String routing,
-                                                @RequestParam("name") String name){
+    public ResponseEntity<Object> updateNavigation(@RequestHeader("adminId")String userId,@RequestBody Navigation navigation){
         AdminUser byId = adminUserService.findById(userId);
         if (byId==null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("无权访问该接口");
         }
-        Navigation navigations = settingService.updateNavigation(id,img,imgBright,routing,name);
+        Navigation navigations = settingService.updateNavigation(navigation);
         return ResponseEntity.ok(navigations);
     }
 
@@ -97,17 +96,15 @@ public class  AdminUserController {
 
     @PostMapping("setNavigation")
     @ApiOperation(("增加底部导航栏"))
-    public ResponseEntity<Object> setNavigation(@RequestHeader("adminId")String userId, @RequestParam("img") MultipartFile img,
-                                                @RequestParam("imgBright") MultipartFile imgBright,@RequestParam("routing") String routing,
-                                                @RequestParam("name") String name){
+    public ResponseEntity<Object> setNavigation(@RequestHeader("adminId")String userId, @RequestBody Navigation navigation){
         AdminUser byId = adminUserService.findById(userId);
         if (byId==null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("无权访问该接口");
         }
-        if (img.isEmpty()||imgBright.isEmpty()||routing.isEmpty()||name.isEmpty()){
+        if (ObjectUtil.isEmpty(navigation)){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("传入数据不能为空");
         }
-        settingService.saveNavigation(img,imgBright,routing,name);
+        settingService.saveNavigation(navigation);
         return ResponseEntity.ok("上传成功");
     }
 
@@ -149,7 +146,7 @@ public class  AdminUserController {
 
     @PostMapping("/setting/AboutWith")
     @ApiOperation("管理员编辑“关于我们")
-    public ResponseEntity AboutWith(@RequestHeader("adminId")String userId,@RequestParam String value){
+    public ResponseEntity AboutWith(@RequestHeader("adminId")String userId,@RequestBody String value){
         AdminUser byId = adminUserService.findById(userId);
         if (byId==null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("无权访问该接口");
@@ -333,7 +330,7 @@ public class  AdminUserController {
 
     @PostMapping("setUserAutoAdd")
     @ApiOperation("设置用户是否自动添加")
-    public ResponseEntity<Object> setUserAutoAdd(@RequestHeader("adminId") String adminId,@RequestBody UserAbleForm form){
+    public ResponseEntity<Object> setUserAutoAdd(@RequestHeader("adminId") String adminId,@RequestBody UserAutoForm form){
         AdminUser byId = adminUserService.findById(adminId);
         if (byId==null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("无权访问该接口");
