@@ -9,10 +9,10 @@ import lombok.Data;
  * TODO
  */
 @Data
-@ApiModel("管理员修改用户登录状态")
-public class UserAbleForm {
+@ApiModel("管理员修改自动添加状态")
+public class UserAutoForm {
     @ApiModelProperty("用户id")
     private String userId;
-    @ApiModelProperty("是否禁用")
-    private boolean isDisabled;
+    @ApiModelProperty("是否自动添加")
+    private boolean autoAdd;
 }
