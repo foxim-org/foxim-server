@@ -4,6 +4,7 @@ import com.hnzz.commons.base.exception.AppException;
 import com.hnzz.dao.AdminUserDao;
 import com.hnzz.entity.*;
 import com.hnzz.form.UserAbleForm;
+import com.hnzz.form.UserAutoForm;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
@@ -71,11 +72,11 @@ public class AdminUserDaoImpl implements AdminUserDao {
     }
 
     @Override
-    public User setUserAutoAdd(UserAbleForm form) {
+    public User setUserAutoAdd(UserAutoForm form) {
         User id = mongoTemplate.findOne(new Query(Criteria.where("id").is(form.getUserId())), User.class);
         assert id != null;
         assert id.getAutoAdd()!= null;
-        id.setAutoAdd(true);
+        id.setAutoAdd(form.isAutoAdd());
         return mongoTemplate.save(id);
     }
 
@@ -156,7 +157,7 @@ public class AdminUserDaoImpl implements AdminUserDao {
         User id = mongoTemplate.findOne(new Query(Criteria.where("id").is(form.getUserId())), User.class);
         assert id != null;
         assert id.getIsDisabled()!= null;
-        id.setIsDisabled(true);
+        id.setIsDisabled(form.isDisabled());
         return mongoTemplate.save(id);
     }
 

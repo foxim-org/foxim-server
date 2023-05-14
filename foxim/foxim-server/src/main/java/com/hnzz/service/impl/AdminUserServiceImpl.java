@@ -13,6 +13,7 @@ import com.hnzz.dto.UserDTO;
 import com.hnzz.entity.*;
 import com.hnzz.form.AdminUserLoginForm;
 import com.hnzz.form.UserAbleForm;
+import com.hnzz.form.UserAutoForm;
 import com.hnzz.service.AdminUserService;
 import com.hnzz.service.GroupService;
 import com.hnzz.service.UserService;
@@ -153,7 +154,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     @Override
-    public UserDTO setUserAutoAdd(UserAbleForm form) {
+    public UserDTO setUserAutoAdd(UserAutoForm form) {
         User user = adminUserDao.setUserAutoAdd(form);
         return BeanUtil.copyProperties(user, UserDTO.class);
     }

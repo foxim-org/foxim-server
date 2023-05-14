@@ -6,6 +6,7 @@ import com.hnzz.entity.AdminUser;
 import com.hnzz.entity.Platform;
 import com.hnzz.form.AdminUserLoginForm;
 import com.hnzz.form.UserAbleForm;
+import com.hnzz.form.UserAutoForm;
 import org.springframework.data.domain.Page;
 
 import java.io.UnsupportedEncodingException;
@@ -50,5 +51,5 @@ public interface AdminUserService {
 
     UserDTO setUserAble(UserAbleForm form);
 
-    UserDTO setUserAutoAdd(UserAbleForm form);
+    UserDTO setUserAutoAdd(UserAutoForm form);
 }

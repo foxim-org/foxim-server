@@ -2,6 +2,7 @@ package com.hnzz.dao;
 
 import com.hnzz.entity.*;
 import com.hnzz.form.UserAbleForm;
+import com.hnzz.form.UserAutoForm;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -50,5 +51,5 @@ public interface AdminUserDao {
 
     AdminUser findAdminById(String adminId);
 
-    User setUserAutoAdd(UserAbleForm form);
+    User setUserAutoAdd(UserAutoForm form);
 }
