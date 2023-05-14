@@ -119,30 +119,30 @@ public class AuthGlobalFilter implements GlobalFilter , Ordered {
         }
 
         //校验jwt令牌是否被篡改过和令牌是否已过期
-        String userJson = "";
-        try{
-            userJson = jwtHelper.parseJWT(jwtToken).get("id",String.class);
-        }catch (Exception e){
-            accessRecords.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            accessRecords.setErrorMessage(ResultCodes.AUTH_ERROR.getMsg());
-            return ResponseUtils.result(exchange,ResultCodes.AUTH_ERROR,HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        if (Objects.equals(userJson, "")){
-            //告知用户必须登录才能访问
-            accessRecords.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            accessRecords.setErrorMessage(ResultCodes.AUTH_ERROR.getMsg());
-            return ResponseUtils.result(exchange,ResultCodes.AUTH_ERROR,HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+//        String userJson = "";
+//        try{
+//            userJson = jwtHelper.parseJWT(jwtToken).get("id",String.class);
+//        }catch (Exception e){
+//            accessRecords.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+//            accessRecords.setErrorMessage(ResultCodes.AUTH_ERROR.getMsg());
+//            return ResponseUtils.result(exchange,ResultCodes.AUTH_ERROR,HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//
+//        if (Objects.equals(userJson, "")){
+//            //告知用户必须登录才能访问
+//            accessRecords.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+//            accessRecords.setErrorMessage(ResultCodes.AUTH_ERROR.getMsg());
+//            return ResponseUtils.result(exchange,ResultCodes.AUTH_ERROR,HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
 
         //令牌有效
-        log.debug("[auth global filter] 令牌校验通过 - {} - json：{}", path, userJson);
+        log.debug("[auth global filter] 令牌校验通过 - {} - json：{}", path, jwtToken);
 
         //将用户的json 加入到请求头中，继续往后传递
         //--------------------------------------------------------------
 
         //通过URLEncoder编码的方式 解决请求头中中文乱码的问题
-        String encode = URLEncoder.encode(userJson, "UTF-8");
+        String encode = URLEncoder.encode(jwtToken, "UTF-8");
         for (String ignorePath : admins) {
             if (antPathMatcher.match(ignorePath, path)) {
                 newHttpHeaders.set("adminId",encode);
