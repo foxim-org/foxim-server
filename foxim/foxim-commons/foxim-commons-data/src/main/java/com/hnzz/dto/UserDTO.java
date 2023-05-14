@@ -69,6 +69,9 @@ UserDTO implements Comparable<UserDTO>{
     @ApiModelProperty("token")
     private String token;
 
+    @ApiModelProperty("自动添加状态")
+    private Boolean autoAdd;
+
     @Override
     public int compareTo(@NotNull UserDTO o) {
         String thisName = this.getPinyinUserName().toLowerCase();
