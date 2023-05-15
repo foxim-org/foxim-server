@@ -154,6 +154,7 @@ public class AuthGlobalFilter implements GlobalFilter , Ordered {
                 accessRecords.setUserId(encode);
                 accessRecords.setAccessRole("user");
             }
+            
         }
         //再将登录令牌的请求头移除掉
         newHttpHeaders.remove("Authorization");
