@@ -156,7 +156,6 @@ public class AdminUserDaoImpl implements AdminUserDao {
     public User setUserAble(UserAbleForm form) {
         User id = mongoTemplate.findOne(new Query(Criteria.where("id").is(form.getUserId())), User.class);
         assert id != null;
-        assert id.getIsDisabled()!= null;
         id.setIsDisabled(form.isDisabled());
         return mongoTemplate.save(id);
     }
