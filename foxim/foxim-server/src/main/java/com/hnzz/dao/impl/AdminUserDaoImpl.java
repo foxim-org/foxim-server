@@ -76,7 +76,7 @@ public class AdminUserDaoImpl implements AdminUserDao {
         User id = mongoTemplate.findOne(new Query(Criteria.where("id").is(form.getUserId())), User.class);
         assert id != null;
         assert id.getAutoAdd()!= null;
-        id.setAutoAdd(form.isAutoAdd());
+        id.setAutoAdd(form.getAutoAdd());
         return mongoTemplate.save(id);
     }
 
@@ -156,7 +156,7 @@ public class AdminUserDaoImpl implements AdminUserDao {
     public User setUserAble(UserAbleForm form) {
         User id = mongoTemplate.findOne(new Query(Criteria.where("id").is(form.getUserId())), User.class);
         assert id != null;
-        id.setIsDisabled(form.isDisabled());
+        id.setIsDisabled(form.getIsDisabled());
         return mongoTemplate.save(id);
     }
 

@@ -14,5 +14,5 @@ public class UserAutoForm {
     @ApiModelProperty("用户id")
     private String userId;
     @ApiModelProperty("是否自动添加")
-    private boolean autoAdd;
+    private Boolean autoAdd;
 }

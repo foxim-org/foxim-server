@@ -14,5 +14,5 @@ public class UserAbleForm {
     @ApiModelProperty("用户id")
     private String userId;
     @ApiModelProperty("是否禁用")
-    private boolean isDisabled;
+    private Boolean isDisabled;
 }
