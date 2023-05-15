@@ -39,7 +39,7 @@ public interface SettingService {
 
     Navigation updateNavigation(Navigation navigation);
 
-    void deleteNavigation(List<String> ids);
+    void deleteNavigation(String id);
 
     Navigation lookOneNavigation(String id);
 }

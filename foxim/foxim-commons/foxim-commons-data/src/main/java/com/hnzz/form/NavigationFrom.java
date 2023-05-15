@@ -16,5 +16,5 @@ import java.util.List;
 @Data
 @ApiModel("底部导航栏Id")
 public class NavigationFrom implements Serializable {
-    private List<String> Ids;
+    private List<String> ids;
 }

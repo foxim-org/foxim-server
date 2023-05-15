@@ -83,12 +83,12 @@ public class  AdminUserController {
 
     @PostMapping("deleteNavigation")
     @ApiOperation(("删除底部导航栏"))
-    public ResponseEntity<Object> deleteNavigation(@RequestHeader("adminId")String userId, @RequestBody NavigationFrom Ids){
+    public ResponseEntity<Object> deleteNavigation(@RequestHeader("adminId")String userId, @RequestBody String id){
         AdminUser byId = adminUserService.findById(userId);
         if (byId==null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("无权访问该接口");
         }
-        settingService.deleteNavigation(Ids.getIds());
+        settingService.deleteNavigation(id);
         return ResponseEntity.ok("删除成功");
     }
 
