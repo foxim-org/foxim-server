@@ -261,6 +261,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> lookOnLine() {
+        String onLine="在线";
+        return template.find(Query.query(Criteria.where("statusText").is(onLine)),User.class);
+    }
+
+    @Override
     @Log("修改用户状态业务层")
     public void setUserStatus(String userId, UserStatusText status) {
         User user = template.findById(userId,User.class);

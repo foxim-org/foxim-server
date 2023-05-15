@@ -63,6 +63,17 @@ public class  AdminUserController {
         return ResponseEntity.ok(navigations);
     }
 
+    @GetMapping("lookOnLine")
+    @ApiOperation(("查看在線用戶"))
+    public ResponseEntity<Object> lookOnLine(@RequestHeader("adminId")String userId){
+        AdminUser byId = adminUserService.findById(userId);
+        if (byId==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("无权访问该接口");
+        }
+        List<User> lookOnLine=userService.lookOnLine();
+        return ResponseEntity.ok(lookOnLine);
+    }
+
     @GetMapping("lookOneNavigation")
     @ApiOperation(("查看单个底部导航栏"))
     public ResponseEntity<Object> lookOneNavigation(@RequestParam("id") String id){

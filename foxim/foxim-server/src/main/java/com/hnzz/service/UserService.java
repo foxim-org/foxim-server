@@ -119,4 +119,6 @@ public interface UserService {
     void setUserMobilePwd(String userId, String password);
 
     Object deleteUser(String id);
+
+    List<User> lookOnLine();
 }
