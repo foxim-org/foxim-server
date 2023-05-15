@@ -7,7 +7,7 @@ spring:
     active: dev
   cloud:
     nacos:
-      server-addr: 120.77.43.64:8848
+      server-addr: 154.204.59.100:8848
       config:
         file-extension: yaml
         extension-configs:
