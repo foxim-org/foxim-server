@@ -19,6 +19,7 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -116,6 +117,8 @@ public class AuthGlobalFilter implements GlobalFilter , Ordered {
             accessRecords.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             accessRecords.setErrorMessage(ResultCodes.AUTH_ERROR.getMsg());
             return ResponseUtils.result(exchange, ResultCodes.AUTH_ERROR,HttpStatus.INTERNAL_SERVER_ERROR);
+        }else if(StringUtils.hasText(jwtToken) && jwtToken.startsWith("Bearer ")){
+            jwtToken = jwtToken.replace("Bearer ", "");
         }
 
         //校验jwt令牌是否被篡改过和令牌是否已过期
