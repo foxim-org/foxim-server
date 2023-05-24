@@ -9,7 +9,7 @@
 git clone https://github.com/zhongzhikeji/chat-server
 cd chat-server
 cd chat
-mvn clean install
+mvn clean install -DskipTests
 cp chat-ability/chat-ability-gateway/target/chat-ability-gateway-1.0-SNAPSHOT.jar ../.
 cp chat-server/target/chat-server-1.0-SNAPSHOT.jar ../.
 java -jar chat-ability-gateway-1.0-SNAPSHOT.jar
